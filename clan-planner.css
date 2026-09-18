@@ -727,13 +727,23 @@ body {
 /* Footer                                                               */
 /* ──────────────────────────────────────────────────────────────────── */
 .footer {
+  position: relative;
   text-align: center;
   margin-top: 28px;
-  padding-top: 20px;
+  padding-top: 26px;
   border-top: 1px solid var(--border);
   font-family: var(--mono);
   font-size: 11px;
   color: #2a3f66;
+}
+.footer::before {
+  content: '';
+  position: absolute;
+  top: -1px; left: 50%;
+  transform: translateX(-50%);
+  width: 120px; height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--win), var(--accent), var(--alt));
 }
 .footer > div { margin-bottom: 8px; }
 .footer > div:last-of-type { margin-bottom: 0; }
@@ -750,6 +760,84 @@ body {
   max-width: 640px;
   margin-left: auto;
   margin-right: auto;
+}
+
+/* Credit cards — two contributors, side by side */
+.footer-credits {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  max-width: 640px;
+  margin: 0 auto 18px;
+}
+.credit-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  text-align: left;
+  transition: border-color .15s, transform .15s;
+}
+.credit-card:hover {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  transform: translateY(-1px);
+}
+.credit-card-alt:hover {
+  border-color: color-mix(in srgb, var(--alt) 40%, var(--border));
+}
+.credit-role {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.role-tag {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  border-radius: 5px;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border));
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+.credit-card-alt .role-tag {
+  border-color: color-mix(in srgb, var(--alt) 30%, var(--border));
+  color: var(--alt);
+  background: color-mix(in srgb, var(--alt) 6%, transparent);
+}
+.credit-by {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-bright);
+}
+
+.footer-meta { color: var(--text-dim); }
+
+.footer-links { margin-top: 2px; }
+.footer-links a {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  text-decoration: none;
+  border-bottom: 1px dashed var(--text-mute);
+  padding-bottom: 1px;
+  transition: color .15s, border-color .15s;
+}
+.footer-links a:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+@media (max-width: 560px) {
+  .footer-credits {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ──────────────────────────────────────────────────────────────────── */
