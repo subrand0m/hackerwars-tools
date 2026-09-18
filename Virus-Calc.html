@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HackerWars Virus Guide — Clan Server Planner</title>
+<link rel="stylesheet" href="./clan-planner.css">
+</head>
+<body>
+<div class="container">
+  <main id="app">
+    <div class="header">
+      <h1>&gt;_ HackerWars Virus Guide</h1>
+      <div class="subtitle">Solo earnings · max-stats per sub-PC</div>
+    </div>
+    <div class="part-label"><span>Clan Server Planner</span></div>
+
+    <div class="utility-strip" aria-label="Live BTC price and planner overrides">
+      <div class="util-btc">
+        <span class="util-label">BTC</span>
+        <span id="btc-price" class="util-value">$—</span>
+        <span id="btc-stale" class="util-stale" hidden>stale</span>
+      </div>
+      <label class="control-inline">
+        <span>BTC override</span>
+        <input type="text" inputmode="decimal" id="btc-override" placeholder="(live)">
+      </label>
+      <label class="control-inline">
+        <span>K_m $/GHz/hr</span>
+        <input type="number" id="km-override" placeholder="100" step="1" min="1">
+      </label>
+      <label class="control-inline">
+        <span>Round days left</span>
+        <input type="number" id="round-days-left" value="30" step="1" min="0" max="120">
+      </label>
+    </div>
+
+    <div class="early-dev-banner" role="note">
+      <span class="early-dev-tag">Early dev</span>
+      Formulas are reverse-engineered from in-game observations. Numbers are approximations and may not match in-game values exactly — use as a planning tool, not gospel.
+    </div>
+
+    <div class="loadout" data-loadout="A">
+
+      <section class="subcard subcard-server" aria-labelledby="server-card-title">
+        <h2 class="subcard-title" id="server-card-title">Server cluster</h2>
+
+        <div class="controls-solo">
+          <label class="control">
+            <span class="control-label">Sub-PCs</span>
+            <input type="range" min="1" max="99" step="1" class="js-sub-pc-count" data-loadout="A">
+            <output class="js-sub-pc-count-value">8</output>
+          </label>
+        </div>
+
+        <div class="controls">
+          <label class="control">
+            <span class="control-label">NET (global)</span>
+            <select class="js-net-mbit" data-loadout="A">
+              <option value="1">1 Mbit (starter)</option>
+              <option value="100">100 Mbit</option>
+              <option value="250">250 Mbit</option>
+              <option value="500">500 Mbit</option>
+              <option value="1000" selected>1 Gbit</option>
+            </select>
+          </label>
+
+          <label class="control">
+            <span class="control-label">RAM / sub-PC</span>
+            <select class="js-ram-mb" data-loadout="A">
+              <option value="256">Alzheimer 256 MB (starter)</option>
+              <option value="512">King Ton 512 MB</option>
+              <option value="1024">Cross 1G</option>
+              <option value="2048">Elephpant 2 GB</option>
+              <option value="4096" selected>Deadly DDR4 4 GB</option>
+            </select>
+          </label>
+
+          <label class="control">
+            <span class="control-label">CPU / sub-PC</span>
+            <select class="js-cpu-mhz" data-loadout="A">
+              <option value="500">500 MHz (starter)</option>
+              <option value="3000">Quad Core 3 GHz</option>
+              <option value="3500">AMD FX 8350</option>
+              <option value="4000">i7 4990k 4 GHz</option>
+              <option value="5000">i7 11700k 5 GHz</option>
+              <option value="6000" selected>i9 13900k 6 GHz</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="server-totals" aria-label="Cluster totals">
+          <div class="server-total">
+            <span class="server-total-label">NET (cluster-wide)</span>
+            <span class="server-total-value js-total-net">— Mbit</span>
+          </div>
+          <div class="server-total">
+            <span class="server-total-label">Total RAM</span>
+            <span class="server-total-value js-total-ram">— MB</span>
+          </div>
+          <div class="server-total">
+            <span class="server-total-label">Total CPU</span>
+            <span class="server-total-value js-total-cpu">— GHz</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="subcard subcard-virus" aria-labelledby="virus-card-title">
+        <h2 class="subcard-title" id="virus-card-title">Viruses</h2>
+
+        <div class="controls-solo">
+          <label class="control">
+            <span class="control-label">Collector</span>
+            <input type="range" min="1.0" max="99.0" step="1" class="js-collector-version" data-loadout="A">
+            <output class="js-collector-version-value">10.0</output>
+          </label>
+        </div>
+
+        <div class="version-sliders">
+          <label class="control">
+            <span class="control-label">Warez version</span>
+            <input type="range" min="1.0" max="99.0" step="1" class="js-warez-version" data-loadout="A">
+            <output class="js-warez-version-value">10.0</output>
+          </label>
+          <label class="control">
+            <span class="control-label">Spam version</span>
+            <input type="range" min="1.0" max="99.0" step="1" class="js-spam-version" data-loadout="A">
+            <output class="js-spam-version-value">10.0</output>
+          </label>
+          <label class="control">
+            <span class="control-label">Miner version</span>
+            <input type="range" min="1.0" max="99.0" step="1" class="js-miner-version" data-loadout="A">
+            <output class="js-miner-version-value">10.0</output>
+          </label>
+        </div>
+
+        <div class="virus-cards" data-loadout="A">
+          <div class="virus-card" data-virus="warez">
+            <div class="vc-header"><span class="vc-name">Warez</span><span class="vc-version">v—</span></div>
+            <div class="vc-dollar">$—/hr</div>
+            <div class="vc-daily">$—/day</div>
+            <div class="vc-npc-base">NPC max: <span>v14.0</span> · research starts above</div>
+          </div>
+          <div class="virus-card" data-virus="spam">
+            <div class="vc-header"><span class="vc-name">Spam</span><span class="vc-version">v—</span></div>
+            <div class="vc-dollar">$—/hr</div>
+            <div class="vc-daily">$—/day</div>
+            <div class="vc-npc-base">NPC max: <span>v12.0</span> · research starts above</div>
+          </div>
+          <div class="virus-card" data-virus="miner">
+            <div class="vc-header"><span class="vc-name">Miner</span><span class="vc-version">v—</span></div>
+            <div class="vc-dollar">$—/hr</div>
+            <div class="vc-daily">$—/day</div>
+            <div class="vc-npc-base">NPC max: <span>v15.0</span> · research starts above</div>
+            <div class="vc-btc">— BTC/hr</div>
+          </div>
+        </div>
+
+        <div class="virus-buttons" data-loadout="A">
+          <button type="button" class="virus-btn" data-virus="warez">Warez</button>
+          <button type="button" class="virus-btn" data-virus="spam">Spam</button>
+          <button type="button" class="virus-btn" data-virus="miner">Miner</button>
+        </div>
+      </section>
+
+      <div class="roi-row" data-loadout="A">
+        <div class="roi-tile">
+          <div class="roi-label">ROI · Next sub-PC</div>
+          <div class="roi-sublabel">Δ if planting <span class="js-roi-active-virus">spam</span></div>
+          <div class="roi-headline">Add sub-PC <span class="js-roi-subpc-nth">#9</span></div>
+          <div class="roi-detail">+<span class="js-roi-subpc-delta">$0</span>/hr · costs <span class="js-roi-subpc-cost">$0</span></div>
+          <div class="roi-payback">payback <span class="js-roi-subpc-days">— days</span></div>
+          <div class="roi-total">
+            <span class="roi-total-label">Cluster <span class="js-roi-cluster-range">#1→#8</span>:</span>
+            <span class="js-roi-cluster-summary">—</span>
+          </div>
+        </div>
+        <div class="roi-tile">
+          <div class="roi-label">ROI · Next research bump</div>
+          <div class="roi-sublabel">bumping <span class="js-roi-active-virus">spam</span></div>
+          <div class="roi-headline"><span class="js-roi-research-from">v—</span> → <span class="js-roi-research-to">v—</span></div>
+          <div class="roi-detail">+<span class="js-roi-research-delta">$0</span>/hr · costs <span class="js-roi-research-cost">$0</span></div>
+          <div class="roi-payback">payback <span class="js-roi-research-time">—</span></div>
+          <div class="roi-total">
+            <span class="roi-total-label">Research <span class="js-roi-totalv-range">v12.0 → v—</span>:</span>
+            <span class="js-roi-totalv-summary">—</span>
+          </div>
+        </div>
+      </div>
+
+      <details class="research-table-block">
+        <summary>Research progression table</summary>
+        <div class="research-table-note">
+          From <span class="js-research-effbase">v—</span> upward
+          (<span class="js-research-effbase-reason">at or above NPC max</span>).
+          Each row is one whole-version research target.
+        </div>
+        <details class="column-key">
+          <summary>What do these columns mean?</summary>
+          <dl class="column-key-list">
+            <dt>Target</dt>
+            <dd>Version you're researching <em>up to</em>. Each row is one whole-version step.</dd>
+            <dt>+ $/hr</dt>
+            <dd>Earnings gain <strong>over the row above</strong> (or over the effective base for the first row). Cumulative — v25.0's gain stacks on top of v24.0's, not on top of the NPC-base row.</dd>
+            <dt>Single-tick cost</dt>
+            <dd>Cost to research <strong>just this one version</strong>, with no batching surcharge. You'd queue it on its own, let it finish, then start the next.</dd>
+            <dt>Batched cost</dt>
+            <dd>Cost to research from your current version up to this one in <strong>a single queued batch</strong>. Includes the batching surcharge — bigger batches pay more per version.</dd>
+            <dt>Payback (single)</dt>
+            <dd>How long the new + $/hr takes to repay the single-tick cost.</dd>
+            <dt>Payback (batch)</dt>
+            <dd>How long the new + $/hr takes to repay the batched cost. You only realize the gain once the whole batch finishes.</dd>
+          </dl>
+        </details>
+        <table class="research-table" data-loadout="A">
+          <thead>
+            <tr>
+              <th>Target</th>
+              <th>+ $/hr</th>
+              <th>Single-tick cost</th>
+              <th>Batched cost</th>
+              <th>Payback (single)</th>
+              <th>Payback (batch)</th>
+            </tr>
+          </thead>
+          <tbody class="js-research-tbody"></tbody>
+        </table>
+      </details>
+
+      <details class="subpc-ladder-block">
+        <summary>Sub-PC purchase ladder</summary>
+        <div class="ladder-note">
+          Each fully-kitted sub-PC adds <span class="js-ladder-per-pc">$0/hr</span>
+          at your current <span class="js-ladder-virus">spam</span> settings.
+          <strong>Fully kitted</strong> = the CPU tier you picked (<span class="js-ladder-cpu-tier">i9 13900k 6 GHz / $15,000</span>) +
+          the RAM tier you picked (<span class="js-ladder-ram-tier">Deadly DDR4 4 GB / $5,000</span>) +
+          SSD2 2 GB HDD ($1,000, baked in) → kit total
+          <span class="js-ladder-kit-cost">$21,000</span>.
+          Server price climbs through #9, then floors at $1,000,000 for #10+.
+        </div>
+        <details class="column-key">
+          <summary>What do these columns mean?</summary>
+          <dl class="column-key-list">
+            <dt>#</dt>
+            <dd>Which sub-PC this would be in your cluster. #2 is your second sub-PC (your localhost is #1 and isn't shown here).</dd>
+            <dt>Server</dt>
+            <dd>Base server price for this slot. Climbs through #9, then floors at $1,000,000 from #10 onward.</dd>
+            <dt>+ Kit</dt>
+            <dd>Added cost to fully kit this sub-PC: the CPU tier you picked + the RAM tier you picked + SSD2 2 GB HDD ($1,000). Same per sub-PC regardless of slot.</dd>
+            <dt>Marginal</dt>
+            <dd>Total cost to add <strong>just this one sub-PC</strong> (Server + Kit). What you actually pay if you stop here.</dd>
+            <dt>Cumulative</dt>
+            <dd>All-in cost of every sub-PC from #2 through this row, summed.</dd>
+            <dt>Payback (this PC)</dt>
+            <dd>How long this sub-PC's added $/hr takes to repay <em>its own</em> marginal cost — not the cumulative.</dd>
+          </dl>
+        </details>
+        <table class="subpc-ladder" data-loadout="A">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Server</th>
+              <th>+ Kit</th>
+              <th>Marginal</th>
+              <th>Cumulative</th>
+              <th>Payback (this PC)</th>
+            </tr>
+          </thead>
+          <tbody class="js-ladder-tbody"></tbody>
+        </table>
+      </details>
+    </div>
+
+    <div class="footer">
+      <div>
+        <span class="accent">&gt;_</span> guide by <span class="credit-name">MushiModal</span>
+        <span class="stamp">//</span> rates reverse engineered &amp; verified from in-game data
+      </div>
+      <div>
+        <span class="accent">&gt;_</span> special thanks to <span class="credit-name">r_0_b_3_3</span>
+        <span class="stamp">//</span> NPC maps
+      </div>
+      <div>
+        <span class="accent">&gt;_</span> R70 update <span class="stamp">//</span> May 2026
+        <span class="stamp">//</span> clan-cluster planner, per-virus NPC base, full research progression
+      </div>
+      <div class="disclaimer">
+        All rates, costs, and ROI calculations are reverse-engineered approximations — not exact, but a useful planning tool.
+      </div>
+    </div>
+  </main>
+</div>
+<script src="./clan-planner.js"></script>
+</body>
+</html>

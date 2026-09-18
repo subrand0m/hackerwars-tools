@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HackerWars Tools</title>
+<style>
+  :root{
+    --bg:#0a0e17; --surface:#0d1220; --border:#1a2744;
+    --text:#e8f0fe; --dim:#8fa4bf; --accent:#00ff88; --cyan:#00ccff; --purple:#8844ff;
+    --mono:'JetBrains Mono', monospace; --sans:'Inter', sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; min-height:100vh; background:var(--bg); color:var(--text);
+    font-family:var(--sans); display:flex; align-items:center; justify-content:center; padding:32px;
+  }
+  .card{
+    width:100%; max-width:560px;
+    background:linear-gradient(180deg, var(--surface) 0%, var(--bg) 100%);
+    border:1px solid var(--border); border-radius:16px; padding:32px;
+    box-shadow:0 8px 32px rgba(0,0,0,0.5), 0 0 100px rgba(0,255,136,0.04);
+  }
+  .accent-bar{height:3px; margin:-32px -32px 24px; background:linear-gradient(90deg, var(--accent), var(--cyan), var(--purple));}
+  h1{font-family:var(--mono); font-size:18px; letter-spacing:1px; margin:0 0 6px; color:var(--text);}
+  p.sub{color:var(--dim); font-size:13px; margin:0 0 24px; font-family:var(--mono);}
+  ul{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px;}
+  a.tool{
+    display:block; padding:14px 16px; border:1px solid var(--border); border-radius:10px;
+    background:rgba(255,255,255,0.02); color:var(--text); text-decoration:none;
+    font-family:var(--mono); font-size:14px; transition:border-color .15s;
+  }
+  a.tool:hover{border-color:var(--accent); color:var(--accent);}
+  a.tool span{display:block; color:var(--dim); font-size:11px; margin-top:3px; font-family:var(--sans);}
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="accent-bar"></div>
+    <h1>&gt;_ HackerWars Tools</h1>
+    <p class="sub">// planning &amp; reference tools</p>
+    <ul>
+      <li><a class="tool" href="./Virus-Calc.html">Virus Guide — Clan Server Planner<span>Solo earnings, ROI, and research progression calculator</span></a></li>
+      <li><a class="tool" href="./NPC-Round-74.html">NPC-ALL — Round 74<span>Live index of every NPC, IP, and software loadout</span></a></li>
+      <li><a class="tool" href="./NPC-Round-73.HTML">NPC-ALL — Round 73 (archive)<span>Previous round's NPC index</span></a></li>
+    </ul>
+  </div>
+</body>
+</html>

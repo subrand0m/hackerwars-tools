@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NPC-ALL // HackerWars Round 74</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0e17;
+  --surface:#0d1220;
+  --surface-hi:rgba(255,255,255,0.02);
+  --border:#1a2744;
+  --border-hi:#26365c;
+  --text:#e8f0fe;
+  --muted:#a0b4cc;
+  --dim:#6a8099;
+  --dimmer:#4a6fa5;
+  --dimmest:#2a3f66;
+  --accent:#00ff88;
+  --accent-dim:rgba(0,255,136,0.25);
+  --cyan:#00ccff;
+  --purple:#8844ff;
+  --purple-lt:#aa88ff;
+  --red:#ff5555;
+  --gold:#ffcc55;
+  --mono-data: 'JetBrains Mono', monospace;
+  --mono-disp: 'JetBrains Mono', monospace;
+  --sans: 'Inter', sans-serif;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth; background:var(--bg);}
+body{
+  margin:0;
+  padding:32px;
+  background:var(--bg);
+  color:var(--muted);
+  font-family:var(--sans);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--accent);color:#04170c;}
+a{color:var(--accent);}
+
+/* ---------- page card ---------- */
+.page-container{
+  max-width:1400px; margin:0 auto;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--bg) 100%);
+  border:1px solid var(--border);
+  border-radius:16px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.5), 0 0 100px rgba(0,255,136,0.04);
+}
+
+/* ---------- header ---------- */
+header{
+  position:sticky; top:0; z-index:50;
+  background:rgba(10,14,23,0.85);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--border);
+  border-radius:16px 16px 0 0;
+  overflow:hidden;
+}
+.header-inner{
+  max-width:1400px; margin:0 auto; padding:16px 24px 18px;
+}
+.topbar-accent{
+  height:3px; background:linear-gradient(90deg, var(--accent), var(--cyan), var(--purple));
+  margin:-16px -24px 18px;
+}
+.brand-row{
+  display:flex; align-items:baseline; justify-content:space-between; gap:16px; flex-wrap:wrap;
+}
+.brand{
+  font-family:var(--mono-disp); font-weight:800; letter-spacing:1.5px;
+  font-size:19px; color:var(--text); display:flex; align-items:center; gap:10px;
+  text-transform:uppercase;
+}
+.brand .prompt{color:var(--accent);}
+.brand .cursor{
+  display:inline-block; width:9px; height:16px; background:var(--accent);
+  animation:blink 1.1s steps(1) infinite; margin-left:2px; vertical-align:-2px;
+}
+@keyframes blink{ 50%{opacity:0;} }
+.subline{color:var(--dimmer); font-size:12px; letter-spacing:0.3px; font-family:var(--mono-data); margin-top:4px;}
+.round-badge{
+  font-family:var(--mono-data); font-size:11px; font-weight:700; color:var(--accent);
+  border:1px solid var(--accent-dim); background:rgba(0,255,136,0.06);
+  padding:4px 10px; border-radius:6px; letter-spacing:1px;
+}
+
+.searchwrap{margin-top:18px;}
+.search-line{
+  display:flex; align-items:center; gap:10px;
+  background:var(--surface-hi); border:1px solid var(--border);
+  border-radius:10px; padding:11px 16px;
+  transition:border-color .15s, box-shadow .15s;
+}
+.search-line:focus-within{
+  border-color:var(--accent); box-shadow:0 0 0 3px rgba(0,255,136,0.10);
+}
+.search-line .glyph{color:var(--accent); font-weight:700; font-size:14px; font-family:var(--mono-data);}
+.search-line input{
+  flex:1; background:transparent; border:none; outline:none;
+  color:var(--text); font-family:var(--mono-data); font-size:14.5px;
+}
+.search-line input::placeholder{color:var(--dim);}
+.search-line .clear-btn{
+  color:var(--dim); background:none; border:1px solid var(--border-hi);
+  border-radius:6px; padding:4px 10px; font-family:var(--mono-data); font-size:11px;
+  cursor:pointer; display:none; letter-spacing:0.5px;
+}
+.search-line .clear-btn:hover{color:var(--text); border-color:var(--accent);}
+
+.filter-row{
+  display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; align-items:center;
+}
+.filter-row .flabel{color:var(--dim); font-size:11px; letter-spacing:1px; margin-right:2px; font-family:var(--mono-data); text-transform:uppercase;}
+
+.loadout-row{
+  display:flex; gap:14px; margin-top:12px; flex-wrap:wrap; align-items:center;
+  padding:10px 12px; background:var(--surface-hi); border:1px solid var(--border); border-radius:10px;
+}
+.loadout-row .flabel{color:var(--dim); font-size:11px; letter-spacing:1px; margin-right:2px; font-family:var(--mono-data); text-transform:uppercase;}
+.load-ctl{display:flex; align-items:center; gap:6px; font-family:var(--mono-data); font-size:11px; color:var(--dim);}
+.load-ctl input{
+  width:64px; background:var(--bg); border:1px solid var(--border-hi); border-radius:6px;
+  color:var(--text); font-family:var(--mono-data); font-size:12px; padding:5px 7px; outline:none;
+}
+.load-ctl input:focus{border-color:var(--accent);}
+.load-ctl.btc-ctl input{width:88px;}
+.load-ctl.btc-ctl{color:var(--gold);}
+.loadout-hint{
+  margin-top:8px; font-size:11px; color:var(--gold); font-family:var(--mono-data);
+  display:none;
+}
+.loadout-hint.show{display:block;}
+.load-ctl.btc-ctl input{border-color:rgba(255,204,85,0.35);}
+.chip{
+  font-family:var(--mono-data); font-size:11px; font-weight:600; letter-spacing:0.5px;
+  padding:6px 12px; border-radius:7px; border:1px solid var(--border-hi);
+  background:var(--surface-hi); color:var(--dim); cursor:pointer;
+  user-select:none; transition:all .12s;
+}
+.chip:hover{color:var(--text); border-color:var(--dim);}
+.chip.active{color:#04170c; border-color:transparent; font-weight:700;}
+
+.status-line{
+  margin-top:12px; font-size:12px; color:var(--dim); font-family:var(--mono-data);
+  display:flex; gap:14px; flex-wrap:wrap; align-items:center;
+}
+.status-line b{color:var(--text);}
+.status-line .hit{color:var(--accent); font-weight:700;}
+.copy-btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:26px; height:22px; border-radius:5px; border:1px solid var(--border-hi);
+  background:var(--surface-hi); color:var(--dim); cursor:pointer; flex-shrink:0;
+  transition:all .12s;
+}
+.copy-btn:hover{color:var(--accent); border-color:var(--accent); background:rgba(0,255,136,0.06);}
+.copy-btn svg{width:13px; height:13px;}
+.copy-btn.copied{color:var(--accent); border-color:var(--accent); background:rgba(0,255,136,0.10);}
+
+/* ---------- grid ---------- */
+main{max-width:1400px; margin:0 auto; padding:26px 24px;}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(330px, 1fr));
+  gap:18px;
+}
+.empty-state{
+  text-align:center; padding:80px 20px; color:var(--dim);
+  font-size:14px; display:none; font-family:var(--mono-data);
+}
+.empty-state .big{font-size:28px; color:var(--dimmest); margin-bottom:10px;}
+
+/* ---------- card ---------- */
+.card{
+  background:linear-gradient(180deg, var(--surface-hi), transparent), var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px; overflow:hidden;
+  display:flex; flex-direction:column;
+  position:relative;
+  transition:border-color .15s ease, transform .15s ease;
+}
+.card::before{
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:var(--card-accent, var(--accent));
+}
+.card:hover{border-color:var(--border-hi); transform:translateY(-2px);}
+.card.dimmed{opacity:0.25; filter:saturate(0.4);}
+
+.card-head{
+  padding:14px 16px 11px; border-bottom:1px solid var(--border);
+  display:flex; align-items:flex-start; justify-content:space-between; gap:8px;
+}
+.card-head-l{min-width:0;}
+.cat-badge{
+  display:inline-block; font-size:10px; font-weight:700; letter-spacing:1.5px;
+  padding:3px 8px; border-radius:5px; margin-bottom:7px;
+  border:1px solid currentColor; font-family:var(--mono-data);
+  text-transform:uppercase;
+}
+.npc-name{
+  font-family:var(--mono-disp); font-weight:700; font-size:14.5px;
+  color:var(--text); line-height:1.3; word-break:break-word; letter-spacing:0.2px;
+}
+.npc-note{font-size:10.5px; color:var(--dim); margin-top:3px; letter-spacing:.03em; font-family:var(--mono-data);}
+.ip-pill{
+  font-family:var(--mono-data); font-size:11.5px; color:var(--accent);
+  background:rgba(0,255,136,0.06); border:1px solid var(--accent-dim);
+  padding:4px 9px; border-radius:6px; white-space:nowrap; cursor:pointer;
+  flex-shrink:0;
+}
+.ip-pill:hover{background:rgba(0,255,136,0.14);}
+.v-spam{ color:#4da6ff; background:rgba(77,166,255,0.10); border:1px solid rgba(77,166,255,0.35); }
+.v-miner{ color:var(--purple-lt); background:rgba(170,136,255,0.10); border:1px solid rgba(170,136,255,0.35); }
+.v-warez{ color:var(--accent); background:rgba(0,255,136,0.10); border:1px solid rgba(0,255,136,0.35); }
+.virus-chip.v-spam{ color:#4da6ff; border-color:rgba(77,166,255,0.35); }
+.virus-chip.v-miner{ color:var(--purple-lt); border-color:rgba(170,136,255,0.35); }
+.virus-chip.v-warez{ color:var(--accent); border-color:rgba(0,255,136,0.35); }
+.virus-chip.v-spam.active{ background:#4da6ff; color:#04101c; border-color:transparent; }
+.virus-chip.v-miner.active{ background:var(--purple-lt); color:#1a0d33; border-color:transparent; }
+.virus-chip.v-warez.active{ background:var(--accent); color:#04170c; border-color:transparent; }
+.num-badge{
+  font-size:10px; color:var(--dimmest); font-family:var(--mono-data);
+  margin-top:5px; text-align:right;
+}
+.rate-row{
+  display:flex; flex-direction:column; gap:3px; margin-top:6px; align-items:flex-end;
+}
+.rate-line{
+  font-family:var(--mono-data); font-size:9.5px; font-weight:600; letter-spacing:.01em;
+  padding:2px 7px; border-radius:5px; border:1px solid transparent; white-space:nowrap;
+  opacity:0.5;
+}
+.rate-line.rl-spam{color:#4da6ff;}
+.rate-line.rl-warez{color:var(--accent);}
+.rate-line.rl-miner{color:var(--purple-lt);}
+.rate-line.best{opacity:1; font-weight:800;}
+.rate-line.best.rl-spam{background:rgba(77,166,255,0.14); border-color:#4da6ff;}
+.rate-line.best.rl-warez{background:rgba(0,255,136,0.14); border-color:var(--accent);}
+.rate-line.best.rl-miner{background:rgba(170,136,255,0.14); border-color:var(--purple-lt);}
+
+.stat-strip{
+  display:grid; grid-template-columns:repeat(5,1fr); gap:6px;
+  padding:12px 14px; border-bottom:1px solid var(--border);
+}
+.stat-box{
+  background:var(--bg); border:1px solid var(--border);
+  border-radius:10px; padding:5px 3px; text-align:center;
+  height:38px; box-sizing:border-box; overflow:hidden;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+}
+.stat-box .k{font-size:8.5px; color:var(--dimmer); letter-spacing:.08em; font-family:var(--mono-data); white-space:nowrap;}
+.stat-box .v{font-size:11px; color:var(--muted); font-weight:600; margin-top:2px; font-family:var(--mono-data); white-space:nowrap;}
+
+.soft-grid{
+  display:grid; grid-template-columns:repeat(auto-fill, 56px);
+  grid-auto-rows:50px;
+  justify-content:space-between; align-items:start;
+  gap:6px; padding:12px 14px; flex:1;
+}
+.soft-box{
+  background:var(--bg); border:1px solid var(--border);
+  border-radius:10px; padding:5px 3px; text-align:center;
+  height:50px; box-sizing:border-box; overflow:hidden;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  transition:all .12s;
+}
+.soft-box .code{
+  font-size:9px; font-weight:700; color:var(--dim); letter-spacing:.04em;
+  font-family:var(--mono-data); white-space:nowrap;
+}
+.soft-box .ver{font-size:11px; color:var(--text); font-weight:700; margin-top:3px; font-family:var(--mono-data); white-space:nowrap;}
+.soft-box .sz{font-size:9px; color:var(--muted); margin-top:1px; font-family:var(--mono-data); white-space:nowrap;}
+.soft-box.match{
+  border-color:var(--accent); background:rgba(0,255,136,0.08);
+  box-shadow:0 0 0 1px var(--accent), 0 0 12px rgba(0,255,136,0.20);
+}
+.soft-box.match .code{color:var(--accent);}
+.no-soft{
+  grid-column:1/-1; color:var(--dimmest); font-size:11px; text-align:center; padding:14px 0;
+  font-family:var(--mono-data);
+}
+
+.riddle-box{
+  margin:0 14px 12px; padding:9px 11px; background:rgba(136,68,255,0.04);
+  border:1px solid rgba(136,68,255,0.2); border-radius:8px; font-size:11.5px;
+}
+.riddle-box .q{color:var(--muted);}
+.riddle-box .q b{color:var(--purple-lt); font-weight:700; font-family:var(--mono-data); letter-spacing:0.5px;}
+.riddle-box .a{color:var(--dim); margin-top:4px;}
+.riddle-box .a b{color:var(--text); font-family:var(--mono-data); letter-spacing:0.5px;}
+
+footer{
+  max-width:1400px; margin:0 auto; padding:34px 24px 40px;
+  color:var(--dimmest); font-size:11px; letter-spacing:.5px; text-align:center;
+  font-family:var(--mono-data); border-top:1px solid var(--border);
+  border-radius:0 0 16px 16px;
+}
+footer .p{color:var(--accent);}
+
+@media (max-width:520px){
+  .grid{grid-template-columns:1fr;}
+  .brand{font-size:16px;}
+}
+@media (max-width:900px){
+  body{padding:14px;}
+  .page-container{border-radius:12px;}
+  header{border-radius:12px 12px 0 0;}
+  footer{border-radius:0 0 12px 12px;}
+}
+</style>
+</head>
+<body>
+
+<div class="page-container">
+<header>
+  <div class="header-inner">
+    <div class="topbar-accent"></div>
+    <div class="brand-row">
+      <div class="brand"><span class="prompt">&gt;_</span> NPC-ALL <span class="cursor"></span></div>
+      <div class="round-badge">ROUND 74</div>
+    </div>
+    <div class="subline">// live index &middot; every NPC, IP, and software loadout in the round file</div>
+
+    <div class="searchwrap">
+      <div class="search-line">
+        <span class="glyph">$</span>
+        <input id="search" type="text" placeholder="grep -i vwarez, or a name, IP, tool, category..." autocomplete="off" spellcheck="false">
+        <button class="clear-btn" id="clearBtn">clear</button>
+      </div>
+      <div class="filter-row" id="catFilters">
+        <span class="flabel">filter:</span>
+      </div>
+      <div class="filter-row" id="virusFilters">
+        <span class="flabel">best upload:</span>
+      </div>
+      <div class="loadout-row" id="loadoutRow">
+        <span class="flabel">your loadout:</span>
+        <label class="load-ctl"><span>Warez v</span><input type="number" id="lv-warez" min="1" max="99" step="0.1"></label>
+        <label class="load-ctl"><span>Spam v</span><input type="number" id="lv-spam" min="1" max="99" step="0.1"></label>
+        <label class="load-ctl"><span>Miner v</span><input type="number" id="lv-miner" min="1" max="99" step="0.1"></label>
+        <label class="load-ctl"><span>Collector v</span><input type="number" id="lv-collector" min="0" max="99" step="0.1"></label>
+        <label class="load-ctl btc-ctl" title="Miner mines a fixed BTC/hr based on CPU/version/collector — this converts it to $/hr and can flip whether Miner beats Spam/Warez."><span>BTC price $</span><input type="number" id="lv-btc" min="0" step="1" placeholder="e.g. 77274"></label>
+      </div>
+      <div class="loadout-hint" id="loadoutHint"></div>
+      <div class="status-line">
+        <span><b id="hitCount">0</b> / <span id="totalCount">0</span> npcs matching</span>
+        <button class="copy-btn" id="copyIpsBtn" title="copy visible IP addresses">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="14" width="16" height="6" rx="1.5"></rect>
+            <path d="M12 3v9"></path>
+            <path d="M8 8l4 4 4-4"></path>
+          </svg>
+        </button>
+        <button class="copy-btn" id="downloadAutoInfectBtn" title="download autoInfect.md (visible IPs + best upload)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+            <path d="M14 3v6h6"></path>
+            <path d="M12 12v6"></path>
+            <path d="M9.5 15.5 12 18l2.5-2.5"></path>
+          </svg>
+        </button>
+        <span id="softHint"></span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="grid" id="grid"></div>
+  <div class="empty-state" id="emptyState">
+    <div class="big">¯\_(ツ)_/¯</div>
+    no NPCs match that query &mdash; try a tool code like <code>vwarez</code>, <code>vminer</code>, or a name/IP fragment
+  </div>
+</main>
+
+<footer>
+</footer>
+</div>
+
+<script>
+const RECORDS = [{"cat":"REGULAR NPC","ip":"69.241.189.106","name":"DOWNLOAD CENTER","note":"","num":"","cpu":8000,"ram":8200,"hdd":50000,"net":1000,"speed1":62.5,"speed2":125,"soft":{"CRC":{"version":1,"size":28},"HASH":{"version":1,"size":26},"SCAN":{"version":1,"size":23},"FWL":{"version":1,"size":23},"HDR":{"version":1,"size":17},"SKR":{"version":1,"size":17},"VSPAM":{"version":1,"size":14},"VCOL":{"version":1,"size":16},"FTPEXP":{"version":1,"size":21},"SSHEXP":{"version":1,"size":21}},"q":"","a":""},{"cat":"RIDDLE TRAIL NPC","ip":"157.71.89.200","name":"FIRST PUZZLE #1","note":"RIDDLE TRAIL","num":"001","cpu":8000,"ram":8200,"hdd":30000,"net":500,"speed1":31.25,"speed2":62.5,"soft":{"CRC":{"version":1.1,"size":30},"HASH":{"version":1,"size":26},"FWL":{"version":1,"size":23},"HDR":{"version":1,"size":17},"FTPEXP":{"version":1,"size":21}},"q":"TIC-TAC-TOE","a":"GAME"},{"cat":"LEVEL 3 MISSION NPC","ip":"50.190.16.21","name":"ABERSNOBBY & BITCH","note":"","num":"","cpu":4000,"ram":8200,"hdd":50000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"HASH":{"version":1,"size":26}},"q":"","a":""},{"cat":"LEVEL 3 MISSION NPC","ip":"100.83.208.155","name":"BANTA","note":"","num":"","cpu":4000,"ram":8200,"hdd":30000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"HASH":{"version":1,"size":26}},"q":"","a":""},{"cat":"LEVEL 2 MISSION NPC","ip":"19.145.155.253","name":"BROKE","note":"","num":"","cpu":4000,"ram":8200,"hdd":50000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"HASH":{"version":1,"size":26}},"q":"","a":""},{"cat":"LEVEL 3 MISSION NPC","ip":"73.116.14.184","name":"NOTHING TO DO","note":"","num":"","cpu":4000,"ram":8200,"hdd":10000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"HASH":{"version":1,"size":26}},"q":"","a":""},{"cat":"LEVEL 3 MISSION NPC","ip":"233.226.215.205","name":"NUKE","note":"","num":"","cpu":4000,"ram":8200,"hdd":30000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"HASH":{"version":1,"size":26}},"q":"","a":""},{"cat":"LEVEL 3 MISSION NPC","ip":"56.69.237.9","name":"OOPS","note":"","num":"","cpu":4000,"ram":8200,"hdd":10000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"HASH":{"version":1,"size":26}},"q":"","a":""},{"cat":"LEVEL 3 MISSION NPC","ip":"163.81.126.200","name":"PERVERT","note":"","num":"","cpu":4000,"ram":8200,"hdd":50000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"HASH":{"version":1,"size":26}},"q":"","a":""},{"cat":"LEVEL 3 MISSION NPC","ip":"145.55.94.46","name":"SEXSI","note":"","num":"","cpu":4000,"ram":500,"hdd":5000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"HASH":{"version":1,"size":26}},"q":"","a":""},{"cat":"LEVEL 3 MISSION NPC","ip":"254.105.104.218","name":"SUNK MICROSYSTEMS","note":"","num":"","cpu":4000,"ram":1500,"hdd":15000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"HASH":{"version":1,"size":26}},"q":"","a":""},{"cat":"LEVEL 3 MISSION NPC","ip":"42.8.27.40","name":"TOSHIBE","note":"","num":"","cpu":4000,"ram":1500,"hdd":15000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"HASH":{"version":1,"size":26}},"q":"","a":""},{"cat":"LEVEL 3 MISSION NPC","ip":"184.64.230.13","name":"TRASHER","note":"","num":"","cpu":4000,"ram":8200,"hdd":50000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"HASH":{"version":1,"size":26}},"q":"","a":""},{"cat":"RIDDLE TRAIL NPC","ip":"32.179.176.184","name":"FIRST PUZZLE #2","note":"RIDDLE TRAIL","num":"002","cpu":4000,"ram":8200,"hdd":10000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":1.2,"size":34},"HASH":{"version":1.1,"size":28},"FWL":{"version":1,"size":23},"SKR":{"version":1.2,"size":20},"VWAREZ":{"version":1,"size":14},"SSHEXP":{"version":1,"size":21},"TORRENT":{"version":1,"size":23}},"q":"How many socks do you need to get until you have a pair with matching color?","a":3.0},{"cat":"LEVEL 1 MISSION NPC","ip":"24.31.13.130","name":"MICROLOST","note":"","num":"","cpu":4000,"ram":8200,"hdd":10000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":1.1,"size":30},"HASH":{"version":1.2,"size":31},"SCAN":{"version":1,"size":23},"FWL":{"version":1,"size":23},"VSPAM":{"version":2,"size":36},"VWAREZ":{"version":1,"size":14},"FTPEXP":{"version":1.2,"size":26},"SSHEXP":{"version":1.3,"size":28}},"q":"","a":""},{"cat":"LEVEL 1 MISSION NPC","ip":"75.37.80.181","name":"MURDER KING","note":"","num":"","cpu":4000,"ram":8200,"hdd":10000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":1.3,"size":37},"HASH":{"version":1.1,"size":28},"FWL":{"version":1.2,"size":28},"HDR":{"version":1.4,"size":25},"SKR":{"version":1.2,"size":20},"VSPAM":{"version":1.2,"size":16},"FTPEXP":{"version":1.1,"size":23}},"q":"","a":""},{"cat":"RIDDLE TRAIL NPC","ip":"219.71.214.132","name":"FIRST PUZZLE #3","note":"RIDDLE TRAIL","num":"003","cpu":8000,"ram":8200,"hdd":30000,"net":500,"speed1":31.25,"speed2":62.5,"soft":{"CRC":{"version":1.3,"size":37},"HASH":{"version":1.2,"size":31},"FWL":{"version":1.2,"size":28},"HDR":{"version":1.1,"size":18},"SKR":{"version":1,"size":17},"VDDOS":{"version":1,"size":15},"VBRK":{"version":1,"size":16},"FTPEXP":{"version":1.1,"size":23},"SSHEXP":{"version":1,"size":21}},"q":"What is the name of the volcano who erupted in 2010 and shut down much of Europe's airspace?","a":"Eyjafjallajökull"},{"cat":"RIDDLE TRAIL NPC","ip":"35.225.93.170","name":"FIRST PUZZLE #4","note":"RIDDLE TRAIL","num":"004","cpu":8000,"ram":8200,"hdd":25000,"net":500,"speed1":31.25,"speed2":62.5,"soft":{"CRC":{"version":1.4,"size":41},"HASH":{"version":1.3,"size":34},"FWL":{"version":1.2,"size":28},"HDR":{"version":1.4,"size":25},"SKR":{"version":1.1,"size":18},"SSHEXP":{"version":1.1,"size":23},"VMINER":{"version":1.3,"size":31}},"q":"What are the 2 numbers whose product is 48 and, when the higher number is divided for the lower, the result is 3?","a":"12, 4"},{"cat":"LEVEL 2 MISSION NPC","ip":"215.30.62.153","name":"ELVI'S","note":"","num":"","cpu":4000,"ram":8200,"hdd":50000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":1.4,"size":41},"HASH":{"version":1.3,"size":34},"SCAN":{"version":1,"size":23},"FWL":{"version":1.7,"size":47},"HDR":{"version":1.1,"size":18},"SKR":{"version":1.2,"size":20},"VSPAM":{"version":1.2,"size":16},"VWAREZ":{"version":1.3,"size":18},"FTPEXP":{"version":1.2,"size":26}},"q":"","a":""},{"cat":"LEVEL 1 MISSION NPC","ip":"183.16.221.204","name":"PINEAPPLE","note":"","num":"","cpu":4000,"ram":1500,"hdd":15000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":1.4,"size":41},"HASH":{"version":1.3,"size":34},"SCAN":{"version":1,"size":23},"FWL":{"version":1.7,"size":47},"HDR":{"version":1.1,"size":18},"SKR":{"version":1.2,"size":20},"VSPAM":{"version":1.2,"size":16},"VWAREZ":{"version":1.3,"size":18},"FTPEXP":{"version":1.2,"size":26}},"q":"","a":""},{"cat":"LEVEL 1 MISSION NPC","ip":"94.11.62.173","name":"ELGOOG","note":"","num":"","cpu":4000,"ram":8200,"hdd":5000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":1.7,"size":56},"HASH":{"version":1.4,"size":38},"FWL":{"version":1.3,"size":31},"FTPEXP":{"version":1.5,"size":35},"SSHEXP":{"version":1.1,"size":23},"VMINER":{"version":1.5,"size":39}},"q":"","a":""},{"cat":"RIDDLE TRAIL NPC","ip":"5.159.173.92","name":"HACKER NEWS #1","note":"RIDDLE TRAIL","num":"005","cpu":4000,"ram":8200,"hdd":15000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":1.5,"size":46},"HASH":{"version":1.4,"size":38},"FWL":{"version":1.4,"size":35},"HDR":{"version":1.3,"size":23},"SKR":{"version":1,"size":17},"AV":{"version":1.5,"size":30},"VSPAM":{"version":1.5,"size":22},"VCOL":{"version":1.5,"size":26},"FTPEXP":{"version":1.8,"size":47}},"q":"If \"one and a half boy\" can eat one and a half hot dog in one and a half minute, how many hot dogs can 6 boys eat in 6 minutes?","a":24.0},{"cat":"RIDDLE TRAIL NPC","ip":"176.71.142.29","name":"HACKER NEWS #2","note":"RIDDLE TRAIL","num":"006","cpu":8000,"ram":8200,"hdd":30000,"net":500,"speed1":31.25,"speed2":62.5,"soft":{"CRC":{"version":1.6,"size":51},"HASH":{"version":1.5,"size":42},"FWL":{"version":1.4,"size":35},"HDR":{"version":1.5,"size":28},"SKR":{"version":1.5,"size":28},"AV":{"version":1.2,"size":22},"FTPEXP":{"version":1,"size":21},"SSHEXP":{"version":1.4,"size":32}},"q":"37.2350° N, 115.8111° W","a":"Area 51"},{"cat":"FINANCIAL NPC","ip":"26.114.163.113","name":"FIRST INTERNATIONAL BANK","note":"","num":"","cpu":4000,"ram":8200,"hdd":30000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"HASH":{"version":1.5,"size":42},"FWL":{"version":1.5,"size":39}},"q":"","a":""},{"cat":"RIDDLE TRAIL NPC","ip":"186.232.131.211","name":"HACKER NEWS #3","note":"RIDDLE TRAIL","num":"007","cpu":4000,"ram":8200,"hdd":10000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":1.7,"size":56},"HASH":{"version":1.6,"size":47},"FWL":{"version":1.6,"size":43},"AV":{"version":1.5,"size":30},"VWAREZ":{"version":1.5,"size":22},"FTPEXP":{"version":1.3,"size":28},"SSHEXP":{"version":1.2,"size":26},"VMINER":{"version":1.6,"size":43}},"q":"In a certain country 1/2 of 5 = 3. Assuming the same proportion, what would be the value of 1/3 of 10?","a":4.0},{"cat":"LEVEL 1 MISSION NPC","ip":"112.242.37.89","name":"WTF","note":"","num":"","cpu":4000,"ram":8200,"hdd":30000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":2.2,"size":90},"HASH":{"version":1.6,"size":47},"SCAN":{"version":1,"size":23},"FWL":{"version":1.9,"size":58},"HDR":{"version":1.8,"size":38},"VSPAM":{"version":1.4,"size":20},"SSHEXP":{"version":1.4,"size":32}},"q":"","a":""},{"cat":"LEVEL 1 MISSION NPC","ip":"46.211.225.68","name":"HELL","note":"","num":"","cpu":4000,"ram":1500,"hdd":15000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":1.3,"size":37},"HASH":{"version":1.7,"size":52},"FWL":{"version":1.4,"size":35},"HDR":{"version":1.6,"size":31},"VSPAM":{"version":1.5,"size":22},"VMINER":{"version":2,"size":63}},"q":"","a":""},{"cat":"RIDDLE TRAIL NPC","ip":"17.184.35.244","name":"HACKER NEWS #4","note":"RIDDLE TRAIL","num":"008","cpu":8000,"ram":8200,"hdd":30000,"net":500,"speed1":31.25,"speed2":62.5,"soft":{"CRC":{"version":1.8,"size":62},"HASH":{"version":1.7,"size":52},"FWL":{"version":1.6,"size":43},"HDR":{"version":1.7,"size":34},"SKR":{"version":1.3,"size":23},"VSPAM":{"version":1.4,"size":20},"VDDOS":{"version":1.5,"size":24},"FTPEXP":{"version":1,"size":21},"SSHEXP":{"version":1.3,"size":28}},"q":"072 097 099 107 101 114 032 087 097 114 115 ","a":"Hacker Wars"},{"cat":"LEVEL 1 MISSION NPC","ip":"10.143.183.103","name":"MCDIABETES","note":"","num":"","cpu":4000,"ram":500,"hdd":5000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":1.9,"size":69},"HASH":{"version":1.7,"size":52},"FWL":{"version":1.7,"size":47},"HDR":{"version":1.3,"size":23},"VSPAM":{"version":1.1,"size":15}},"q":"","a":""},{"cat":"LEVEL 1 MISSION NPC","ip":"90.196.188.123","name":"GIMME YOUR BUCKS COFFEE","note":"","num":"","cpu":4000,"ram":8200,"hdd":10000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":1.8,"size":62},"HASH":{"version":1.7,"size":52},"FWL":{"version":2.5,"size":98},"HDR":{"version":2.2,"size":54},"AV":{"version":2.3,"size":63},"VSPAM":{"version":1.5,"size":22}},"q":"","a":""},{"cat":"RIDDLE TRAIL NPC","ip":"137.119.131.149","name":"HACKER NEWS #5","note":"RIDDLE TRAIL","num":"009","cpu":4000,"ram":8200,"hdd":10000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":1.9,"size":69},"HASH":{"version":1.8,"size":57},"FWL":{"version":1.8,"size":52},"SKR":{"version":2,"size":45},"AV":{"version":1.4,"size":27},"VSPAM":{"version":1.7,"size":27},"VCOL":{"version":2,"size":42},"FTPEXP":{"version":1.7,"size":43},"SSHEXP":{"version":1.3,"size":28}},"q":"Setec Astronomy","a":"Too Many Secrets"},{"cat":"LEVEL 1 MISSION NPC","ip":"237.32.64.101","name":"VERY CHEESY PICTURES","note":"","num":"","cpu":4000,"ram":1500,"hdd":15000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":1.7,"size":56},"HASH":{"version":1.9,"size":63},"SCAN":{"version":1,"size":23},"FWL":{"version":1.7,"size":47},"SKR":{"version":1.2,"size":20},"VSPAM":{"version":2,"size":36},"FTPEXP":{"version":2.5,"size":89}},"q":"","a":""},{"cat":"RIDDLE TRAIL NPC","ip":"3.59.190.249","name":"HACKER NEWS #6","note":"RIDDLE TRAIL","num":"010","cpu":4000,"ram":8200,"hdd":10000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":2,"size":75},"HASH":{"version":1.9,"size":63},"FWL":{"version":1.8,"size":52},"HDR":{"version":1.5,"size":28},"SKR":{"version":1.6,"size":31},"VSPAM":{"version":1.4,"size":20},"FTPEXP":{"version":2,"size":57},"SSHEXP":{"version":1.2,"size":26}},"q":"SUDOKU","a":"GAME"},{"cat":"LEVEL 1 MISSION NPC","ip":"212.206.189.8","name":"FIASCO SYSTEMS","note":"","num":"","cpu":4000,"ram":1500,"hdd":15000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":2.6,"size":126},"HASH":{"version":1.9,"size":63},"FWL":{"version":2,"size":63}},"q":"","a":""},{"cat":"LEVEL 1 MISSION NPC","ip":"187.8.209.21","name":"UPAY","note":"","num":"","cpu":4000,"ram":8200,"hdd":50000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":2.7,"size":136},"HASH":{"version":2,"size":69},"FWL":{"version":1.7,"size":47}},"q":"","a":""},{"cat":"RIDDLE TRAIL NPC","ip":"1.2.3.4","name":"FIRST WHOIS","note":"RIDDLE TRAIL","num":"011","cpu":8000,"ram":8200,"hdd":30000,"net":500,"speed1":31.25,"speed2":62.5,"soft":{"CRC":{"version":2.1,"size":83},"HASH":{"version":2,"size":69},"FWL":{"version":2,"size":63},"HDR":{"version":2,"size":45},"SKR":{"version":1.9,"size":41},"AV":{"version":2,"size":48},"VSPAM":{"version":2,"size":36},"VWAREZ":{"version":2,"size":36},"FTPEXP":{"version":1.8,"size":47},"SSHEXP":{"version":2,"size":57},"VMINER":{"version":2,"size":63},"ANA":{"version":1,"size":23},"TORRENT":{"version":2,"size":63}},"q":"2048","a":"GAME"},{"cat":"REGULAR NPC","ip":"183.91.168.210","name":"ISP","note":"","num":"","cpu":8000.0,"ram":8200.0,"hdd":10000.0,"net":1000.0,"speed1":62.5,"speed2":125.0,"soft":{"HASH":{"version":2,"size":69},"FWL":{"version":2,"size":63}},"q":"","a":""},{"cat":"RIDDLE TRAIL NPC","ip":"212.70.3.99","name":"TOO MANY SECRETS #1","note":"RIDDLE TRAIL","num":"012","cpu":8000,"ram":8200,"hdd":30000,"net":500,"speed1":31.25,"speed2":62.5,"soft":{"CRC":{"version":2.2,"size":90},"HASH":{"version":2.1,"size":76},"FWL":{"version":2,"size":63},"HDR":{"version":1.8,"size":38},"VDDOS":{"version":2,"size":39},"FTPEXP":{"version":2.6,"size":96},"SSHEXP":{"version":1.9,"size":52}},"q":"01010011 01110100 01100001 01111001 01001000 01110101 01101110 01100111 01110010 01111001 00101100 01010011 01110100 01100001 01111001 01000110 01101111 01101111 01101100 01101001 01110011 01101000","a":"Stay Hungry, Stay Foolish"},{"cat":"LEVEL 1 MISSION NPC","ip":"216.52.191.144","name":"STALKER","note":"","num":"","cpu":4000,"ram":8200,"hdd":30000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":2,"size":75},"HASH":{"version":2.2,"size":83},"SCAN":{"version":1,"size":23},"FWL":{"version":1,"size":23},"FTPEXP":{"version":1.6,"size":39},"SSHEXP":{"version":1.7,"size":43}},"q":"","a":""},{"cat":"RIDDLE TRAIL NPC","ip":"47.27.11.28","name":"TOO MANY SECRETS #2","note":"RIDDLE TRAIL","num":"013","cpu":8000,"ram":8200,"hdd":30000,"net":500,"speed1":31.25,"speed2":62.5,"soft":{"CRC":{"version":2.3,"size":99},"HASH":{"version":2.2,"size":83},"FWL":{"version":2,"size":63},"HDR":{"version":2.5,"size":70},"AV":{"version":2.5,"size":75},"SSHEXP":{"version":2.4,"size":82}},"q":"What was the name of the third Musketeer?","a":"Aramis"},{"cat":"RIDDLE TRAIL NPC","ip":"83.200.136.172","name":"TOO MANY SECRETS #3","note":"RIDDLE TRAIL","num":"014","cpu":4000,"ram":8200,"hdd":10000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":2.4,"size":107},"HASH":{"version":2.3,"size":91},"FWL":{"version":2.2,"size":76},"SKR":{"version":3,"size":101},"VSPAM":{"version":2.6,"size":61},"FTPEXP":{"version":2.4,"size":82},"SSHEXP":{"version":2.2,"size":69}},"q":"How many chocolate bars can both eat, together, in 15 seconds?","a":"62.5"},{"cat":"RIDDLE TRAIL NPC","ip":"39.23.66.96","name":"TOO MANY SECRETS #4","note":"RIDDLE TRAIL","num":"015","cpu":4000,"ram":8200,"hdd":50000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":2.5,"size":116},"HASH":{"version":2.4,"size":99},"FWL":{"version":2.2,"size":76},"HDR":{"version":1.9,"size":41},"SKR":{"version":2.6,"size":76},"VWAREZ":{"version":2.5,"size":56},"FTPEXP":{"version":2.2,"size":69},"SSHEXP":{"version":1.7,"size":43}},"q":"What was the new weight of the potatoes?","a":50.0},{"cat":"LEVEL 1 MISSION NPC","ip":"246.157.136.221","name":"GAYPAL","note":"","num":"","cpu":4000,"ram":8200,"hdd":50000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":2.3,"size":99},"HASH":{"version":2.5,"size":107},"FWL":{"version":2,"size":63},"AV":{"version":1.3,"size":24},"VWAREZ":{"version":1.5,"size":22},"FTPEXP":{"version":1.6,"size":39}},"q":"","a":""},{"cat":"RIDDLE TRAIL NPC","ip":"60.156.94.246","name":"LOREM IPSUM #1","note":"RIDDLE TRAIL","num":"016","cpu":4000,"ram":8200,"hdd":10000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":2.7,"size":136},"HASH":{"version":2.5,"size":107},"FWL":{"version":2.4,"size":90},"HDR":{"version":1,"size":17},"SKR":{"version":1.5,"size":28},"VCOL":{"version":2.5,"size":65},"FTPEXP":{"version":2.3,"size":75},"VMINER":{"version":3,"size":142}},"q":"How many animals of each kind did the farmer buy?","a":"5, 1, 94"},{"cat":"FINANCIAL NPC","ip":"236.65.34.161","name":"HEBC","note":"","num":"","cpu":4000,"ram":8200,"hdd":30000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"HASH":{"version":2.5,"size":107},"FWL":{"version":2.5,"size":98}},"q":"","a":""},{"cat":"REGULAR NPC","ip":"5.177.188.225","name":"TORRENT MARKET","note":"","num":"","cpu":8000,"ram":8200,"hdd":50000,"net":1000,"speed1":62.5,"speed2":125,"soft":{"HASH":{"version":2.5,"size":107},"FWL":{"version":2.5,"size":98},"TORRENT":{"version":3,"size":228}},"q":"","a":""},{"cat":"LEVEL 1 MISSION NPC","ip":"51.227.4.92","name":"ENJOY CAPITALISM","note":"","num":"","cpu":4000,"ram":8200,"hdd":10000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":2.5,"size":116},"HASH":{"version":2.7,"size":125},"FWL":{"version":2.2,"size":76},"VWAREZ":{"version":2,"size":36},"FTPEXP":{"version":2.5,"size":89}},"q":"","a":""},{"cat":"RIDDLE TRAIL NPC","ip":"53.226.126.134","name":"LOREM IPSUM #2","note":"RIDDLE TRAIL","num":"017","cpu":4000,"ram":8200,"hdd":10000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":2.9,"size":157},"HASH":{"version":2.7,"size":125},"FWL":{"version":2.4,"size":90},"HDR":{"version":3.3,"size":123},"SKR":{"version":2.8,"size":88},"AV":{"version":3,"size":108},"VSPAM":{"version":3,"size":81},"FTPEXP":{"version":1.8,"size":47},"SSHEXP":{"version":2.4,"size":82}},"q":"MINESWEEPER","a":"GAME"},{"cat":"LEVEL 1 MISSION NPC","ip":"48.72.173.214","name":"NOPLACE FOR US ANYMORE","note":"","num":"","cpu":4000,"ram":8200,"hdd":50000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":2.7,"size":136},"HASH":{"version":2.8,"size":135},"SCAN":{"version":1,"size":23},"FWL":{"version":2.4,"size":90}},"q":"","a":""},{"cat":"RIDDLE TRAIL NPC","ip":"19.250.37.13","name":"LOREM IPSUM #3","note":"RIDDLE TRAIL","num":"018","cpu":8000,"ram":8200,"hdd":30000,"net":500,"speed1":31.25,"speed2":62.5,"soft":{"CRC":{"version":3,"size":169},"HASH":{"version":2.9,"size":145},"FWL":{"version":2.6,"size":106},"HDR":{"version":2.9,"size":95},"SKR":{"version":3.6,"size":148},"VWAREZ":{"version":3.3,"size":99},"FTPEXP":{"version":1.6,"size":39},"SSHEXP":{"version":2,"size":57}},"q":"What was the actual classification of the competitors?","a":"Phoebe, Milena, Naomy"},{"cat":"RIDDLE TRAIL NPC","ip":"150.209.191.47","name":"LOREM IPSUM #4","note":"RIDDLE TRAIL","num":"019","cpu":8000,"ram":8200,"hdd":30000,"net":500,"speed1":31.25,"speed2":62.5,"soft":{"CRC":{"version":3.2,"size":193},"HASH":{"version":3,"size":155},"FWL":{"version":2.6,"size":106},"HDR":{"version":3.7,"size":157},"FTPEXP":{"version":3,"size":128},"SSHEXP":{"version":3,"size":128}},"q":"How many birds and cages do you have?","a":"4, 3"},{"cat":"LEVEL 2 MISSION NPC","ip":"83.33.240.74","name":"CATVIDEOS","note":"","num":"","cpu":4000,"ram":8200,"hdd":10000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":4,"size":307},"HASH":{"version":3,"size":155},"FWL":{"version":3.7,"size":219},"SKR":{"version":2.7,"size":82},"VSPAM":{"version":2.4,"size":52},"FTPEXP":{"version":2.8,"size":111},"SSHEXP":{"version":3.3,"size":156}},"q":"","a":""},{"cat":"RIDDLE TRAIL NPC","ip":"238.101.199.203","name":"LOREM IPSUM #5","note":"RIDDLE TRAIL","num":"020","cpu":4000,"ram":8200,"hdd":15000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":3.4,"size":219},"HASH":{"version":3.2,"size":177},"FWL":{"version":2.8,"size":123},"HDR":{"version":3,"size":101},"SKR":{"version":2.8,"size":88},"AV":{"version":3.4,"size":140},"VSPAM":{"version":3.5,"size":112},"FTPEXP":{"version":2.8,"size":111},"SSHEXP":{"version":2.4,"size":82}},"q":"The following assertments about the test are fake, but one assertment of each (note each have two assertments) can be true.","a":"a, d, c"},{"cat":"LEVEL 2 MISSION NPC","ip":"37.115.16.194","name":"HACKER INSIDE","note":"","num":"","cpu":4000,"ram":500,"hdd":5000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":3.5,"size":232},"HASH":{"version":3.3,"size":189},"FWL":{"version":2.8,"size":123},"HDR":{"version":1.2,"size":20},"VSPAM":{"version":2.2,"size":44}},"q":"","a":""},{"cat":"RIDDLE TRAIL NPC","ip":"30.171.137.75","name":"LOREM IPSUM #6","note":"RIDDLE TRAIL","num":"021","cpu":4500,"ram":8200,"hdd":10000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":3.6,"size":246},"HASH":{"version":3.4,"size":201},"FWL":{"version":2.8,"size":123},"HDR":{"version":3.3,"size":123},"SKR":{"version":2.7,"size":82},"VDDOS":{"version":3,"size":88},"VBRK":{"version":3,"size":95},"FTPEXP":{"version":2.3,"size":75},"SSHEXP":{"version":1.9,"size":52}},"q":"What is the length of her head, tail and the rest of the body?","a":"3, 3, 9"},{"cat":"RIDDLE TRAIL NPC","ip":"95.246.176.193","name":"LOREM IPSUM #7","note":"RIDDLE TRAIL","num":"022","cpu":4000,"ram":8200,"hdd":10000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":3.8,"size":276},"HASH":{"version":3.6,"size":227},"FWL":{"version":3,"size":142},"HDR":{"version":4,"size":185},"SKR":{"version":4,"size":185},"AV":{"version":4,"size":197},"FTPEXP":{"version":2.2,"size":69},"SSHEXP":{"version":2.1,"size":63}},"q":"How many yellow birds were seen altogether? How many birds with other colors were seen altogether?","a":"5, 2"},{"cat":"LEVEL 2 MISSION NPC","ip":"44.140.110.89","name":"INSANE","note":"","num":"","cpu":4000,"ram":8200,"hdd":50000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":4,"size":307},"HASH":{"version":3.6,"size":227},"FWL":{"version":5.9,"size":585},"VWAREZ":{"version":4.2,"size":164},"FTPEXP":{"version":6.3,"size":607}},"q":"","a":""},{"cat":"LEVEL 2 MISSION NPC","ip":"146.145.81.204","name":"TITANIC","note":"","num":"","cpu":4000,"ram":1500,"hdd":15000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":4.4,"size":375},"HASH":{"version":3.8,"size":254},"FWL":{"version":2.8,"size":123},"VSPAM":{"version":1.9,"size":33},"FTPEXP":{"version":4,"size":234},"SSHEXP":{"version":3.3,"size":156}},"q":"","a":""},{"cat":"RIDDLE TRAIL NPC","ip":"30.7.64.239","name":"HANGMAN #1","note":"RIDDLE TRAIL","num":"023","cpu":4000,"ram":8200,"hdd":15000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":4,"size":307},"HASH":{"version":3.8,"size":254},"FWL":{"version":3,"size":142},"HDR":{"version":3.7,"size":157},"SKR":{"version":3.5,"size":140},"VSPAM":{"version":4,"size":148},"VCOL":{"version":4,"size":172},"FTPEXP":{"version":3,"size":128},"SSHEXP":{"version":3,"size":128}},"q":"How could you display the number 100 using only six times the number 9, without any other digit, and with only two operations?","a":"99+99/99"},{"cat":"RIDDLE TRAIL NPC","ip":"159.172.2.161","name":"HANGMAN #2","note":"RIDDLE TRAIL","num":"024","cpu":4000,"ram":8200,"hdd":15000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":4.2,"size":340},"HASH":{"version":4,"size":283},"FWL":{"version":3.2,"size":162},"HDR":{"version":2.8,"size":88},"SKR":{"version":3.3,"size":123},"VWAREZ":{"version":4,"size":148},"FTPEXP":{"version":2.9,"size":120},"SSHEXP":{"version":2.2,"size":69}},"q":"How many crocodiles each of them have?","a":"49, 35"},{"cat":"FINANCIAL NPC","ip":"36.41.62.136","name":"AMERICAN EXPENSE","note":"","num":"","cpu":4000,"ram":8200,"hdd":40000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"HASH":{"version":4,"size":283},"FWL":{"version":4,"size":258}},"q":"","a":""},{"cat":"RIDDLE TRAIL NPC","ip":"176.101.194.183","name":"HANGMAN #3","note":"RIDDLE TRAIL","num":"025","cpu":4000,"ram":8200,"hdd":10000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":4.4,"size":375},"HASH":{"version":4.2,"size":313},"FWL":{"version":3.2,"size":162},"HDR":{"version":3.7,"size":157},"SKR":{"version":3.4,"size":131},"FTPEXP":{"version":3.6,"size":187},"SSHEXP":{"version":2.4,"size":82},"VMINER":{"version":4,"size":258}},"q":"∀x Player(x) ^ (∃y,z Premium(y) ^ Buys(x, y, z)) => Awesome(x)","a":"Every player who buys premium is awesome"},{"cat":"LEVEL 2 MISSION NPC","ip":"47.29.126.179","name":"NOKIDS","note":"","num":"","cpu":4000,"ram":8200,"hdd":10000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":5.9,"size":696},"HASH":{"version":4.2,"size":313},"FWL":{"version":3.4,"size":184},"SKR":{"version":3.6,"size":148},"VSPAM":{"version":3.9,"size":140},"FTPEXP":{"version":5,"size":374}},"q":"","a":""},{"cat":"RIDDLE TRAIL NPC","ip":"251.251.129.124","name":"HANGMAN #4","note":"RIDDLE TRAIL","num":"026","cpu":8000,"ram":8200,"hdd":15000,"net":350,"speed1":21.875,"speed2":43.75,"soft":{"CRC":{"version":4.6,"size":412},"HASH":{"version":4.4,"size":345},"FWL":{"version":3.4,"size":184},"HDR":{"version":4,"size":185},"SKR":{"version":3.7,"size":157},"VSPAM":{"version":4.5,"size":189},"FTPEXP":{"version":3.4,"size":166},"SSHEXP":{"version":3,"size":128}},"q":"How many animals of each type (sheeps and chickens) are there in this group?","a":"9, 18"},{"cat":"RIDDLE TRAIL NPC","ip":"140.121.196.93","name":"HANGMAN #5","note":"RIDDLE TRAIL","num":"027","cpu":8000,"ram":8200,"hdd":30000,"net":500,"speed1":31.25,"speed2":62.5,"soft":{"CRC":{"version":4.8,"size":451},"HASH":{"version":4.6,"size":379},"FWL":{"version":3.4,"size":184},"HDR":{"version":4.6,"size":248},"SKR":{"version":4,"size":185},"AV":{"version":5,"size":315},"FTPEXP":{"version":3.6,"size":187},"SSHEXP":{"version":2,"size":57}},"q":"/bb|[^b]{2}/","a":"To be or not to be"},{"cat":"RIDDLE TRAIL NPC","ip":"208.3.38.143","name":"HANGMAN #6","note":"RIDDLE TRAIL","num":"028","cpu":8000,"ram":8200,"hdd":30000,"net":500,"speed1":31.25,"speed2":62.5,"soft":{"CRC":{"version":5,"size":491},"HASH":{"version":4.8,"size":415},"FWL":{"version":3.6,"size":207},"HDR":{"version":4.4,"size":225},"SKR":{"version":4,"size":185},"VCOL":{"version":5,"size":275},"FTPEXP":{"version":3,"size":128},"SSHEXP":{"version":3,"size":128}},"q":"Hacker Wars is a fork based on which game?","a":"Hacker Experience"},{"cat":"REGULAR NPC","ip":"80.180.165.181","name":"SAFENET","note":"","num":"","cpu":4000,"ram":8200,"hdd":30000,"net":200,"speed1":12.5,"speed2":25,"soft":{"HASH":{"version":5,"size":452},"FWL":{"version":3.5,"size":195}},"q":"","a":""},{"cat":"RIDDLE TRAIL NPC","ip":"201.60.231.129","name":"SECOND WHOIS, INC.","note":"RIDDLE TRAIL","num":"029","cpu":8000,"ram":8200,"hdd":30000,"net":500,"speed1":31.25,"speed2":62.5,"soft":{"CRC":{"version":5.3,"size":555},"HASH":{"version":5,"size":452},"FWL":{"version":3.6,"size":207},"HDR":{"version":5,"size":295},"SKR":{"version":5,"size":295},"VSPAM":{"version":5,"size":236},"VWAREZ":{"version":5,"size":236},"FTPEXP":{"version":2,"size":57},"SSHEXP":{"version":4.5,"size":299},"VMINER":{"version":5,"size":413},"NMAP":{"version":1,"size":23},"ANA":{"version":2,"size":63},"EXE":{"version":1,"size":100},"TORRENT":{"version":3,"size":142}},"q":"LIGHTS OUT","a":"GAME"},{"cat":"FINANCIAL NPC","ip":"89.10.236.130","name":"BITCOIN MARKET","note":"","num":"","cpu":8000,"ram":8200,"hdd":50000,"net":1000,"speed1":62.5,"speed2":125,"soft":{"HASH":{"version":5,"size":452},"FWL":{"version":5,"size":413},"VMINER":{"version":10,"size":1740.8}},"q":"","a":""},{"cat":"LEVEL 2 MISSION NPC","ip":"158.216.249.172","name":"OVERPRICED","note":"","num":"","cpu":4000,"ram":8200,"hdd":30000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":5.6,"size":624},"HASH":{"version":5.2,"size":491},"SCAN":{"version":1,"size":23},"FWL":{"version":3.6,"size":207},"HDR":{"version":3.6,"size":148},"SKR":{"version":2.9,"size":95},"VSPAM":{"version":3.9,"size":140},"FTPEXP":{"version":3,"size":128},"SSHEXP":{"version":4.6,"size":313}},"q":"","a":""},{"cat":"RIDDLE TRAIL NPC","ip":"148.134.75.87","name":"GNIRUT #1","note":"RIDDLE TRAIL","num":"030","cpu":4000,"ram":8200,"hdd":15000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":5.6,"size":624},"HASH":{"version":5.3,"size":511},"FWL":{"version":3.9,"size":245},"VDDOS":{"version":5,"size":256},"VBRK":{"version":5,"size":275},"FTPEXP":{"version":3.6,"size":187},"SSHEXP":{"version":4.2,"size":259}},"q":"Nazi Gemany's military used a machine to encrypt and decrypt messages during WWII. What was the name of the machine?","a":"Enigma"},{"cat":"LEVEL 2 MISSION NPC","ip":"214.82.136.149","name":"LIFE'S TOUGH","note":"","num":"","cpu":4000,"ram":1500,"hdd":15000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":3.8,"size":276},"HASH":{"version":5.4,"size":532},"FWL":{"version":4,"size":258},"VSPAM":{"version":2,"size":36}},"q":"","a":""},{"cat":"LEVEL 2 MISSION NPC","ip":"126.66.18.73","name":"FAIL","note":"","num":"","cpu":4000,"ram":8200,"hdd":30000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":5.2,"size":534},"HASH":{"version":5.6,"size":574},"FWL":{"version":3,"size":142}},"q":"","a":""},{"cat":"RIDDLE TRAIL NPC","ip":"151.219.83.220","name":"GNIRUT #2","note":"RIDDLE TRAIL","num":"031","cpu":4000,"ram":8200,"hdd":10000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":5.9,"size":696},"HASH":{"version":5.6,"size":574},"FWL":{"version":3.9,"size":245},"HDR":{"version":6,"size":433},"AV":{"version":7,"size":638},"FTPEXP":{"version":4.2,"size":259},"SSHEXP":{"version":3.3,"size":156},"VMINER":{"version":6,"size":606}},"q":"What has a head, a tail, is brown, and has no legs?","a":"Penny"},{"cat":"RIDDLE TRAIL NPC","ip":"238.225.98.42","name":"GNIRUT #3","note":"RIDDLE TRAIL","num":"032","cpu":4000,"ram":8200,"hdd":15000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":6.2,"size":772},"HASH":{"version":5.9,"size":640},"FWL":{"version":4.2,"size":286},"SKR":{"version":6,"size":433},"VSPAM":{"version":7,"size":478},"VCOL":{"version":7,"size":558},"FTPEXP":{"version":4.2,"size":259},"SSHEXP":{"version":4.5,"size":299}},"q":"What is the world's oldest hotel?","a":"Nishiyama Onsen Keiunkan"},{"cat":"FINANCIAL NPC","ip":"170.25.99.138","name":"SWISS INTERNATIONAL BANK","note":"","num":"","cpu":4000,"ram":8200,"hdd":10000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"HASH":{"version":6,"size":663},"FWL":{"version":6,"size":606}},"q":"","a":""},{"cat":"RIDDLE TRAIL NPC","ip":"51.75.115.187","name":"GNIRUT #4","note":"RIDDLE TRAIL","num":"033","cpu":4000,"ram":8200,"hdd":15000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":6.4,"size":825},"HASH":{"version":6.2,"size":711},"FWL":{"version":4.2,"size":286},"HDR":{"version":5.9,"size":418},"SKR":{"version":5.6,"size":374},"FTPEXP":{"version":5,"size":374},"SSHEXP":{"version":4.5,"size":299}},"q":"Decode the following: SGFjayBUaGUgUGxhbmV0","a":"Hack The Planet"},{"cat":"RIDDLE TRAIL NPC","ip":"41.80.47.90","name":"GNIRUT #5","note":"RIDDLE TRAIL","num":"034","cpu":4000,"ram":8200,"hdd":15000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":6.8,"size":937},"HASH":{"version":6.4,"size":759},"FWL":{"version":4.5,"size":331},"HDR":{"version":7,"size":598},"VDDOS":{"version":7.5,"size":598},"VBRK":{"version":7.5,"size":644},"FTPEXP":{"version":4.7,"size":328},"SSHEXP":{"version":4.5,"size":299}},"q":"Crack this hash: '482c811da5d5b4bc6d497ffa98491e38'.","a":"password123"},{"cat":"RIDDLE TRAIL NPC","ip":"179.89.147.170","name":"GNIRUT #6","note":"RIDDLE TRAIL","num":"035","cpu":8000,"ram":8200,"hdd":30000,"net":500,"speed1":31.25,"speed2":62.5,"soft":{"CRC":{"version":7.1,"size":1024},"HASH":{"version":6.8,"size":862},"FWL":{"version":4.5,"size":331},"SKR":{"version":7,"size":598},"AV":{"version":8,"size":843},"FTPEXP":{"version":4.2,"size":259},"SSHEXP":{"version":5,"size":374}},"q":"How many cards are there?","a":"47"},{"cat":"RIDDLE TRAIL NPC","ip":"201.251.163.157","name":"GNIRUT #7","note":"RIDDLE TRAIL","num":"036","cpu":4000,"ram":8200,"hdd":10000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":7.5,"size":1228.8},"HASH":{"version":7.1,"size":944},"FWL":{"version":4.8,"size":379},"HDR":{"version":6.8,"size":563},"SKR":{"version":7,"size":598},"FTPEXP":{"version":3.9,"size":222},"SSHEXP":{"version":4.2,"size":259},"VMINER":{"version":9,"size":1433.6}},"q":"Decrypt this: '... .... --- .-- / -. --- / .-. . -- --- .-. ... .'","a":"show no remorse"},{"cat":"RIDDLE TRAIL NPC","ip":"139.96.35.123","name":"EDUARD KHIL","note":"RIDDLE TRAIL","num":"037","cpu":4000,"ram":8200,"hdd":10000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":8,"size":1331.2},"HASH":{"version":7.5,"size":1126.4},"FWL":{"version":5,"size":413},"HDR":{"version":7.4,"size":671},"SKR":{"version":7.2,"size":634},"VSPAM":{"version":10,"size":1024},"VCOL":{"version":10,"size":1228.8},"FTPEXP":{"version":5,"size":374},"SSHEXP":{"version":5,"size":374}},"q":"What is the most popular Youtube song as of November 2019?","a":"Despacito"},{"cat":"RIDDLE TRAIL NPC","ip":"126.55.68.115","name":"THIRD WHOIS #1","note":"RIDDLE TRAIL","num":"038","cpu":8000,"ram":8200,"hdd":30000,"net":1000,"speed1":62.5,"speed2":125,"soft":{"CRC":{"version":8.5,"size":1536},"HASH":{"version":8,"size":1228.8},"FWL":{"version":5.5,"size":504},"HDR":{"version":7.5,"size":690},"SKR":{"version":7.5,"size":690},"FTPEXP":{"version":5,"size":374},"SSHEXP":{"version":5,"size":374},"ANA":{"version":3,"size":142}},"q":"Which 3 numbers have the same answer whether they’re added or multiplied together?","a":"1, 2, 3"},{"cat":"FINANCIAL NPC","ip":"53.14.219.72","name":"ULTIMATE BANK","note":"","num":"","cpu":6000,"ram":8200,"hdd":30000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"HASH":{"version":8,"size":1228.8},"FWL":{"version":8,"size":1126.4}},"q":"","a":""},{"cat":"RIDDLE TRAIL NPC","ip":"85.86.139.79","name":"THIRD WHOIS #2","note":"RIDDLE TRAIL","num":"039","cpu":4000,"ram":8200,"hdd":15000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":9,"size":1740.8},"HASH":{"version":8.5,"size":1433.6},"FWL":{"version":5.5,"size":504},"HDR":{"version":10,"size":1331.2},"SKR":{"version":7.5,"size":690},"AV":{"version":10,"size":1331.2},"FTPEXP":{"version":4.7,"size":328},"SSHEXP":{"version":7,"size":757}},"q":"Unscramble the names of the following three gems: ianddmo, buyr, aprsihep","a":"diamond, ruby, sapphire"},{"cat":"RIDDLE TRAIL NPC","ip":"155.178.204.207","name":"THIRD WHOIS #3","note":"RIDDLE TRAIL","num":"040","cpu":4000,"ram":8200,"hdd":10000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":9.5,"size":1945.6},"HASH":{"version":9,"size":1536},"FWL":{"version":6,"size":606},"HDR":{"version":9.2,"size":1126.4},"SKR":{"version":10,"size":1331.2},"VDDOS":{"version":10,"size":1126.4},"FTPEXP":{"version":4.9,"size":358},"SSHEXP":{"version":6.6,"size":669}},"q":"What movie does the term 'hackerman' originate from","a":"Kung Fury"},{"cat":"RIDDLE TRAIL NPC","ip":"70.145.195.94","name":"THIRD WHOIS #4","note":"RIDDLE TRAIL","num":"041","cpu":8000,"ram":8200,"hdd":30000,"net":500,"speed1":31.25,"speed2":62.5,"soft":{"CRC":{"version":11,"size":2252.8},"HASH":{"version":9.5,"size":1740.8},"FWL":{"version":6,"size":606},"HDR":{"version":6.8,"size":563},"SKR":{"version":9.6,"size":1228.8},"VDDOS":{"version":7.3,"size":566},"VBRK":{"version":10,"size":1228.8},"FTPEXP":{"version":8,"size":1024},"SSHEXP":{"version":5.9,"size":529}},"q":"Who said this quote?","a":"Morpheus"},{"cat":"REGULAR NPC","ip":"70.132.82.234","name":"FBI","note":"","num":"","cpu":4000,"ram":8200,"hdd":50000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"HASH":{"version":10,"size":1945.6},"FWL":{"version":7.5,"size":966}},"q":"","a":""},{"cat":"REGULAR NPC","ip":"155.164.158.130","name":"GEEK PRIDE LABS","note":"","num":"","cpu":4000,"ram":8200,"hdd":50000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"HASH":{"version":10,"size":1945.6},"FWL":{"version":10,"size":1740.8}},"q":"","a":""},{"cat":"REGULAR NPC","ip":"108.195.199.113","name":"NUMATAKA CORP","note":"","num":"","cpu":8000,"ram":8200,"hdd":50000,"net":500,"speed1":31.25,"speed2":62.5,"soft":{"HASH":{"version":10,"size":1945.6},"FWL":{"version":10,"size":1740.8}},"q":"","a":""},{"cat":"RIDDLE TRAIL NPC","ip":"211.83.160.138","name":"THIRD WHOIS #5","note":"RIDDLE TRAIL","num":"042","cpu":4000,"ram":8200,"hdd":15000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":12,"size":2560},"HASH":{"version":11,"size":2048},"FWL":{"version":8,"size":1126.4},"HDR":{"version":11,"size":1331.2},"SKR":{"version":9.7,"size":1228.8},"AV":{"version":12,"size":1536},"FTPEXP":{"version":7.6,"size":899},"SSHEXP":{"version":6.9,"size":735}},"q":"What is the plaintext of this message? 44-2-222-55-33-777","a":"hacker"},{"cat":"RIDDLE TRAIL NPC","ip":"118.63.227.198","name":"THIRD WHOIS #6","note":"RIDDLE TRAIL","num":"043","cpu":8000,"ram":8200,"hdd":30000,"net":500,"speed1":31.25,"speed2":62.5,"soft":{"CRC":{"version":13,"size":2764.8},"HASH":{"version":12,"size":2355.2},"FWL":{"version":9,"size":1433.6},"HDR":{"version":10.4,"size":1331.2},"SKR":{"version":11,"size":1331.2},"VSPAM":{"version":12,"size":1126.4},"VCOL":{"version":12,"size":1331.2}},"q":"What is the name of the museum where this computer is located at?","a":"LCM+L"},{"cat":"RIDDLE TRAIL NPC","ip":"21.74.26.133","name":"THIRD WHOIS #7","note":"RIDDLE TRAIL","num":"044","cpu":4000,"ram":8200,"hdd":10000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":14,"size":3174.4},"HASH":{"version":13,"size":2560},"FWL":{"version":9,"size":1433.6},"HDR":{"version":9.8,"size":1228.8},"SKR":{"version":10.2,"size":1331.2},"VWAREZ":{"version":14,"size":1331.2},"FTPEXP":{"version":9,"size":1331.2},"SSHEXP":{"version":9,"size":1331.2}},"q":"What is the tallest building in the world?","a":"Burj Khalifa"},{"cat":"RIDDLE TRAIL NPC","ip":"141.177.228.155","name":"THIRD WHOIS #8","note":"RIDDLE TRAIL","num":"045","cpu":4000,"ram":8200,"hdd":15000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":15,"size":3584},"HASH":{"version":14,"size":2867.2},"FWL":{"version":10,"size":1740.8},"HDR":{"version":15,"size":1945.6},"SKR":{"version":10.4,"size":1331.2},"AV":{"version":14,"size":1843.2},"FTPEXP":{"version":8.7,"size":1228.8},"SSHEXP":{"version":6.2,"size":587}},"q":"What is the name of the person who developed bitcoin?","a":"Satoshi Nakamoto"},{"cat":"RIDDLE TRAIL NPC","ip":"85.171.18.250","name":"THIRD WHOIS #9","note":"RIDDLE TRAIL","num":"046","cpu":8000,"ram":8200,"hdd":30000,"net":500,"speed1":31.25,"speed2":62.5,"soft":{"CRC":{"version":16,"size":3993.6},"HASH":{"version":15,"size":3174.4},"FWL":{"version":11,"size":1945.6},"HDR":{"version":13.4,"size":1638.4},"SKR":{"version":15,"size":1945.6},"FTPEXP":{"version":8.8,"size":1228.8},"SSHEXP":{"version":8.2,"size":1126.4},"VMINER":{"version":15,"size":2867.2}},"q":"What is the hash function used by Bitcoin?","a":"SHA256"},{"cat":"RIDDLE TRAIL NPC","ip":"47.91.144.72","name":"THIRD WHOIS #10","note":"RIDDLE TRAIL","num":"047","cpu":4000,"ram":8200,"hdd":15000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"CRC":{"version":17,"size":4505.6},"HASH":{"version":16,"size":3584},"FWL":{"version":12,"size":2048},"HDR":{"version":14.9,"size":1945.6},"SKR":{"version":13.2,"size":1638.4},"VBRK":{"version":15,"size":1740.8},"FTPEXP":{"version":13,"size":2048},"SSHEXP":{"version":13,"size":2048}},"q":"When was Hackerwars.io released?","a":"10/11/2019"},{"cat":"RIDDLE TRAIL NPC","ip":"19.194.11.166","name":"FOURTH WHOIS","note":"RIDDLE TRAIL","num":"048","cpu":8000,"ram":8200,"hdd":30000,"net":1000,"speed1":62.5,"speed2":125,"soft":{"CRC":{"version":18,"size":5017.6},"HASH":{"version":17,"size":4096},"FWL":{"version":13,"size":2355.2},"HDR":{"version":10,"size":1331.2},"SKR":{"version":10,"size":1331.2},"VWAREZ":{"version":10,"size":1024},"FTPEXP":{"version":15,"size":2560},"SSHEXP":{"version":15,"size":2560},"VMINER":{"version":10,"size":1740.8}},"q":"THE END","a":"NUNYA"},{"cat":"REGULAR NPC","ip":"183.101.48.11","name":"FSCK YOU","note":"","num":"","cpu":8000,"ram":8200,"hdd":30000,"net":500,"speed1":31.25,"speed2":62.5,"soft":{"CRC":{"version":20,"size":6246.4},"HASH":{"version":19,"size":5120},"FWL":{"version":15,"size":2867.2},"HDR":{"version":14.3,"size":1843.2},"SKR":{"version":12.8,"size":1536},"FTPEXP":{"version":12.7,"size":2048},"SSHEXP":{"version":9.5,"size":1433.6}},"q":"","a":""},{"cat":"REGULAR NPC","ip":"62.57.58.42","name":"SLOWDAN","note":"","num":"","cpu":4000,"ram":8200,"hdd":30000,"net":100,"speed1":6.25,"speed2":12.5,"soft":{"HASH":{"version":20,"size":5632},"FWL":{"version":15,"size":2867.2}},"q":"","a":""},{"cat":"REGULAR NPC","ip":"167.88.131.138","name":"NSA","note":"","num":"","cpu":8000,"ram":16400,"hdd":50000,"net":1000,"speed1":62.5,"speed2":125,"soft":{"HASH":{"version":40,"size":26640}},"q":"","a":""}];
+const CAT_META = {"REGULAR NPC":{"short":"REG","color":"#00ccff"},"LEVEL 1 MISSION NPC":{"short":"LVL1","color":"#00ff88"},"LEVEL 2 MISSION NPC":{"short":"LVL2","color":"#aa88ff"},"LEVEL 3 MISSION NPC":{"short":"LVL3","color":"#ff5555"},"FINANCIAL NPC":{"short":"FIN","color":"#ffcc55"},"RIDDLE TRAIL NPC":{"short":"PZL","color":"#8844ff"}};
+const SOFT_LABELS = {
+  crc:'Cracker', hash:'Hasher', scan:'Port Scan', fwl:'Firewall', hdr:'Hidder', skr:'Seeker',
+  av:'Anti-Virus', vspam:'Spam', vwarez:'Warez', vcol:'Collector', vddos:'DDoS', vbrk:'Breaker',
+  ftpexp:'FTP Exploit', sshexp:'SSH Exploit', vminer:'Miner', nmap:'Nmap', ana:'Analyzer',
+  exe:'Web Server', torrent:'Torrent'
+};
+const CODE_ALIASES = {
+  warez:'vwarez', spam:'vspam', collector:'vcol', col:'vcol', ddos:'vddos',
+  breaker:'vbrk', brk:'vbrk', miner:'vminer', ftp:'ftpexp', ftpexploit:'ftpexp',
+  ssh:'sshexp', sshexploit:'sshexp', cracker:'crc', hasher:'hash',
+  firewall:'fwl', hidder:'hdr', seeker:'skr', antivirus:'av', analyzer:'ana',
+  webserver:'exe', portscan:'scan'
+};
+function resolveSortCode(term){
+  if(SOFT_LABELS.hasOwnProperty(term)) return term.toUpperCase();
+  if(CODE_ALIASES.hasOwnProperty(term)) return CODE_ALIASES[term].toUpperCase();
+  return 'CRC';
+}
+
+const grid = document.getElementById('grid');
+const searchInput = document.getElementById('search');
+const clearBtn = document.getElementById('clearBtn');
+const emptyState = document.getElementById('emptyState');
+const hitCountEl = document.getElementById('hitCount');
+const copyIpsBtn = document.getElementById('copyIpsBtn');
+const downloadAutoInfectBtn = document.getElementById('downloadAutoInfectBtn');
+let currentResults = [];
+const totalCountEl = document.getElementById('totalCount');
+const softHintEl = document.getElementById('softHint');
+const catFilters = document.getElementById('catFilters');
+const virusFilters = document.getElementById('virusFilters');
+
+// Earning-rate constants + version/collector multipliers.
+// Warez/Spam are straight $/hr: rate = BASE_RATE x its own stat x virusPercent(yourVersion) x collectorBonus(yourCollector):
+//   Warez -> NET x $3.00/Mbit/hr
+//   Spam  -> RAM x $0.0501/MB/hr
+// Miner is different: mining produces a fixed amount of BTC/hr (driven by CPU/version/
+// collector, NOT by price) — that BTC only becomes dollars once you sell it, so
+// minerDollarPerHr = minerBtcPerHr x currentBtcPrice. Changing the BTC price box moves the
+// dollar figure directly, which can flip whether Miner beats Spam/Warez.
+// MINER_BTC_RATE (BTC/GHz/hr at miner v1.0 / collector v0) is anchored so that, at the
+// reference BTC price below, it reproduces the dev-confirmed $100/GHz/hr baseline —
+// i.e. it's the same verified constant, just re-expressed in BTC instead of dollars.
+const WAREZ_RATE = 3.00;      // $/Mbit/hr
+const SPAM_RATE  = 0.0501;    // $/MB/hr
+const K_M        = 100;       // $/GHz/hr at v1.0 / collector v0 (reference dollar yield)
+const BTC_REF_PRICE  = 77274; // reference BTC price the $100/GHz/hr baseline is anchored to
+const MINER_BTC_RATE = K_M / BTC_REF_PRICE; // BTC/GHz/hr at v1.0 / collector v0
+
+function virusPercent(version){ return (version * 10 / 1000) * 2 + 1; }
+function collectorBonus(collectorVersion){ return 1 + collectorVersion / 100; }
+
+const LOADOUT_KEY = 'npcAllLoadoutV1';
+// Defaults: v1.0 for warez/spam/miner (the most commonly-uploaded version), and
+// collector v12 (the highest VCOL version found on any NPC in this file, so it's
+// the best achievable purely by stealing from NPCs, no research needed).
+const loadout = Object.assign({warez:1, spam:1, miner:1, collector:12, btc:BTC_REF_PRICE}, (() => {
+  try{
+    const raw = localStorage.getItem(LOADOUT_KEY);
+    return raw ? JSON.parse(raw) : {};
+  }catch(e){ return {}; }
+})());
+function saveLoadout(){
+  try{ localStorage.setItem(LOADOUT_KEY, JSON.stringify(loadout)); }catch(e){}
+}
+
+function bestVirus(rec){
+  const net = rec.net || 0;      // Mbit/s
+  const ram = rec.ram || 0;      // MB
+  const cpuGhz = (rec.cpu || 0) / 1000; // MHz -> GHz
+  const col = collectorBonus(loadout.collector);
+  const warez = WAREZ_RATE * net * virusPercent(loadout.warez) * col;
+  const spam  = SPAM_RATE  * ram * virusPercent(loadout.spam)  * col;
+
+  const minerBtcPerHr = cpuGhz * MINER_BTC_RATE * virusPercent(loadout.miner) * col;
+  const hasBtcPrice = loadout.btc && loadout.btc > 0;
+  const miner = minerBtcPerHr * (hasBtcPrice ? loadout.btc : BTC_REF_PRICE);
+
+  const best = Math.max(warez, spam, miner);
+  const type = best === warez ? 'WAREZ' : (best === spam ? 'SPAM' : 'MINER');
+  const cls = best === warez ? 'v-warez' : (best === spam ? 'v-spam' : 'v-miner');
+  return {type, cls, rate:best, warez, spam, miner, minerBtc:minerBtcPerHr};
+}
+
+RECORDS.forEach(r => { r._best = bestVirus(r); });
+
+RECORDS.sort((a,b) => {
+  const av = (a.soft && a.soft.CRC && a.soft.CRC.version != null) ? a.soft.CRC.version : null;
+  const bv = (b.soft && b.soft.CRC && b.soft.CRC.version != null) ? b.soft.CRC.version : null;
+  if(av == null && bv == null) return 0;
+  if(av == null) return 1;
+  if(bv == null) return -1;
+  return av - bv;
+});
+
+totalCountEl.textContent = RECORDS.length;
+
+let activeCat = null;
+
+// build category filter chips
+Object.keys(CAT_META).forEach(cat => {
+  const meta = CAT_META[cat];
+  const chip = document.createElement('div');
+  chip.className = 'chip';
+  chip.textContent = meta.short + ' (' + RECORDS.filter(r=>r.cat===cat).length + ')';
+  chip.style.color = meta.color;
+  chip.dataset.cat = cat;
+  chip.addEventListener('click', () => {
+    if(activeCat === cat){ activeCat = null; chip.classList.remove('active'); chip.style.background=''; chip.style.color=meta.color; }
+    else {
+      document.querySelectorAll('.chip').forEach(c=>{c.classList.remove('active'); c.style.background=''; });
+      Object.keys(CAT_META).forEach(k=>{
+        const el = document.querySelector('[data-cat="'+k+'"]');
+        if(el) el.style.color = CAT_META[k].color;
+      });
+      activeCat = cat;
+      chip.classList.add('active');
+      chip.style.background = meta.color;
+      chip.style.color = '#04170c';
+    }
+    render();
+  });
+  catFilters.appendChild(chip);
+});
+
+let activeVirus = null;
+const VIRUS_TYPES = [
+  {type:'SPAM', cls:'v-spam', label:'SPAM'},
+  {type:'MINER', cls:'v-miner', label:'BTC'},
+  {type:'WAREZ', cls:'v-warez', label:'WAREZ'}
+];
+VIRUS_TYPES.forEach(v => {
+  const count = RECORDS.filter(r => r._best.type === v.type).length;
+  const chip = document.createElement('div');
+  chip.className = 'chip virus-chip ' + v.cls;
+  chip.textContent = v.label + ' (' + count + ')';
+  chip.dataset.virus = v.type;
+  chip.addEventListener('click', () => {
+    if(activeVirus === v.type){
+      activeVirus = null;
+      chip.classList.remove('active');
+    } else {
+      document.querySelectorAll('.virus-chip').forEach(c => c.classList.remove('active'));
+      activeVirus = v.type;
+      chip.classList.add('active');
+    }
+    render();
+  });
+  virusFilters.appendChild(chip);
+});
+
+function fmtSize(mb){
+  if(mb == null) return '';
+  if(mb >= 1024) return (mb/1024).toFixed(1)+'GB';
+  return Math.round(mb)+'MB';
+}
+function fmtNum(n){
+  if(n == null) return '—';
+  if(Number.isInteger(n)) return n.toString();
+  return n.toString();
+}
+
+
+function cardHTML(rec, term){
+  const meta = CAT_META[rec.cat] || {short:'?',color:'#888'};
+  const best = rec._best;
+  const softEntries = Object.entries(rec.soft || {});
+  let softHTML = '';
+  if(softEntries.length === 0){
+    softHTML = '<div class="no-soft">no software loadout</div>';
+  } else {
+    softHTML = softEntries.map(([code,info]) => {
+      const lc = code.toLowerCase();
+      const isMatch = term && (lc.includes(term) || (SOFT_LABELS[lc]||'').toLowerCase().includes(term));
+      return '<div class="soft-box'+(isMatch?' match':'')+'" title="'+(SOFT_LABELS[lc]||code)+'">'
+        + '<div class="code">'+code+'</div>'
+        + '<div class="ver">v'+fmtNum(info.version)+'</div>'
+        + '<div class="sz">'+fmtSize(info.size)+'</div>'
+        + '</div>';
+    }).join('');
+  }
+
+  let riddleHTML = '';
+  if(rec.cat === 'RIDDLE TRAIL NPC' && (rec.q || rec.a)){
+    riddleHTML = '<div class="riddle-box">'
+      + '<div class="q"><b>Q:</b> '+escapeHTML(rec.q)+'</div>'
+      + '<div class="a"><b>A:</b> '+escapeHTML(rec.a)+'</div>'
+      + '</div>';
+  }
+
+  return '<div class="card" data-cat="'+rec.cat+'" style="--card-accent:'+meta.color+'">'
+    + '<div class="card-head">'
+      + '<div class="card-head-l">'
+        + '<div class="cat-badge" style="color:'+meta.color+'">'+meta.short+'</div>'
+        + '<div class="npc-name">'+escapeHTML(rec.name)+'</div>'
+        + (rec.note ? '<div class="npc-note">'+escapeHTML(rec.note)+'</div>' : '')
+      + '</div>'
+      + '<div style="text-align:right">'
+        + '<div class="ip-pill" onclick="navigator.clipboard&&navigator.clipboard.writeText(\''+rec.ip+'\')" title="click to copy">'+rec.ip+'</div>'
+        + '<div class="rate-row">'
+          + '<div class="rate-line rl-spam'+(best.type==='SPAM'?' best':'')+'">SPAM $'+Math.round(best.spam).toLocaleString()+'/hr</div>'
+          + '<div class="rate-line rl-miner'+(best.type==='MINER'?' best':'')+'">BTC $'+Math.round(best.miner).toLocaleString()+'/hr'
+            + (best.minerBtc!=null ? ' &middot; '+best.minerBtc.toFixed(6)+' BTC/hr' : '')
+            + '</div>'
+          + '<div class="rate-line rl-warez'+(best.type==='WAREZ'?' best':'')+'">WAREZ $'+Math.round(best.warez).toLocaleString()+'/hr</div>'
+        + '</div>'
+        + (rec.num ? '<div class="num-badge">#'+rec.num+'</div>' : '')
+      + '</div>'
+    + '</div>'
+    + '<div class="stat-strip">'
+      + statBox('CPU', fmtNum(rec.cpu))
+      + statBox('RAM', fmtNum(rec.ram))
+      + statBox('HDD', fmtNum(rec.hdd))
+      + statBox('NET', fmtNum(rec.net))
+      + statBox('SPD', fmtNum(rec.speed1))
+    + '</div>'
+    + '<div class="soft-grid">'+softHTML+'</div>'
+    + riddleHTML
+    + '</div>';
+}
+function statBox(k,v){
+  return '<div class="stat-box"><div class="k">'+k+'</div><div class="v">'+v+'</div></div>';
+}
+function escapeHTML(s){
+  if(s==null) return '';
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function matches(rec, term){
+  if(activeCat && rec.cat !== activeCat) return false;
+  if(activeVirus && rec._best.type !== activeVirus) return false;
+  if(!term) return true;
+  const hay = [
+    rec.name, rec.ip, rec.cat, rec.note, rec.q, rec.a,
+    ...Object.keys(rec.soft||{}),
+    ...Object.keys(rec.soft||{}).map(c => SOFT_LABELS[c.toLowerCase()] || '')
+  ].join(' ').toLowerCase();
+  return hay.includes(term);
+}
+
+function render(){
+  const raw = searchInput.value.trim().toLowerCase();
+  clearBtn.style.display = raw ? 'inline-block' : 'none';
+  let results = RECORDS.filter(r => matches(r, raw));
+
+  if(raw){
+    const sortCode = resolveSortCode(raw);
+    results = results.slice().sort((a,b) => {
+      const av = (a.soft && a.soft[sortCode] && a.soft[sortCode].version != null) ? a.soft[sortCode].version : null;
+      const bv = (b.soft && b.soft[sortCode] && b.soft[sortCode].version != null) ? b.soft[sortCode].version : null;
+      if(av == null && bv == null) return 0;
+      if(av == null) return 1;
+      if(bv == null) return -1;
+      return bv - av;
+    });
+  }
+
+  hitCountEl.textContent = results.length;
+  currentResults = results;
+
+  if(raw && SOFT_LABELS[raw]){
+    softHintEl.textContent = '• matches highlighted for "'+raw+'" ('+SOFT_LABELS[raw]+')';
+  } else {
+    softHintEl.textContent = '';
+  }
+
+  if(results.length === 0){
+    grid.style.display = 'none';
+    emptyState.style.display = 'block';
+    return;
+  }
+  grid.style.display = 'grid';
+  emptyState.style.display = 'none';
+  grid.innerHTML = results.map(r => cardHTML(r, raw)).join('');
+}
+
+function updateVirusChipCounts(){
+  VIRUS_TYPES.forEach(v => {
+    const count = RECORDS.filter(r => r._best.type === v.type).length;
+    const chip = virusFilters.querySelector('[data-virus="'+v.type+'"]');
+    if(chip) chip.textContent = v.label + ' (' + count + ')';
+  });
+}
+
+const loadoutHintEl = document.getElementById('loadoutHint');
+function updateLoadoutHint(){
+  if(!loadout.btc || loadout.btc <= 0){
+    loadoutHintEl.textContent = 'no BTC price entered — Miner is being priced at the $'+BTC_REF_PRICE.toLocaleString()+' reference rate until you enter the current price above';
+    loadoutHintEl.classList.add('show');
+  } else {
+    loadoutHintEl.classList.remove('show');
+  }
+}
+
+function recalcAll(){
+  RECORDS.forEach(r => { r._best = bestVirus(r); });
+  updateVirusChipCounts();
+  updateLoadoutHint();
+  render();
+}
+
+const loadInputs = {
+  warez: document.getElementById('lv-warez'),
+  spam: document.getElementById('lv-spam'),
+  miner: document.getElementById('lv-miner'),
+  collector: document.getElementById('lv-collector'),
+  btc: document.getElementById('lv-btc')
+};
+loadInputs.warez.value = loadout.warez;
+loadInputs.spam.value = loadout.spam;
+loadInputs.miner.value = loadout.miner;
+loadInputs.collector.value = loadout.collector;
+loadInputs.btc.value = loadout.btc != null ? loadout.btc : '';
+updateLoadoutHint();
+
+['warez','spam','miner','collector'].forEach(key => {
+  loadInputs[key].addEventListener('input', () => {
+    const v = parseFloat(loadInputs[key].value);
+    loadout[key] = Number.isFinite(v) ? v : 0;
+    saveLoadout();
+    recalcAll();
+  });
+});
+loadInputs.btc.addEventListener('input', () => {
+  const v = parseFloat(loadInputs.btc.value);
+  loadout.btc = (Number.isFinite(v) && v > 0) ? v : null;
+  saveLoadout();
+  recalcAll();
+});
+
+searchInput.addEventListener('input', render);
+clearBtn.addEventListener('click', () => { searchInput.value=''; render(); searchInput.focus(); });
+
+copyIpsBtn.addEventListener('click', () => {
+  const ips = currentResults.map(r => r.ip).join('\n');
+  if(!ips) return;
+  const done = () => {
+    copyIpsBtn.classList.add('copied');
+    setTimeout(() => copyIpsBtn.classList.remove('copied'), 1100);
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(ips).then(done).catch(done);
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = ips; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); }catch(e){}
+    document.body.removeChild(ta);
+    done();
+  }
+});
+
+const MD_VIRUS_LABEL = {SPAM:'Spam', MINER:'Miner', WAREZ:'Warez'};
+downloadAutoInfectBtn.addEventListener('click', () => {
+  if(!currentResults.length) return;
+  const lines = currentResults.map(r => r.ip + ' - ' + (MD_VIRUS_LABEL[r._best.type] || r._best.type));
+  const content = '# Known IPs\n' + lines.join('\n') + '\n';
+  const blob = new Blob([content], {type:'text/markdown'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'autoInfect.md';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  downloadAutoInfectBtn.classList.add('copied');
+  setTimeout(() => downloadAutoInfectBtn.classList.remove('copied'), 1100);
+});
+
+render();
+</script>
+</body>
+</html>

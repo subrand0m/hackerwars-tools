@@ -1,0 +1,793 @@
+/* clan-planner.css — lifts theme from virus_guide_advanced.html */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+:root {
+  --bg: #0a0e17;
+  --bg-container: #0d1220;
+  --bg-card: rgba(255,255,255,0.02);
+  --border: #1a2744;
+  --text: #c8d6e5;
+  --text-bright: #e8f0fe;
+  --text-dim: #8fa4bf;
+  --text-mute: #4a6fa5;
+  --accent: #00ccff;
+  --win: #00ff88;
+  --warn: #f5a623;
+  --alt: #aa88ff;
+  --danger: #ff5555;
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Inter', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+/* Honor the [hidden] attribute even when an author rule sets display:flex/grid */
+[hidden] { display: none !important; }
+html { background: var(--bg); scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* Container + page chrome (header / part-label / utility-strip)         */
+/* ──────────────────────────────────────────────────────────────────── */
+.container {
+  background: linear-gradient(180deg, var(--bg-container) 0%, var(--bg) 100%);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 36px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 100px rgba(0,204,255,0.04);
+}
+.container::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--win), var(--accent), var(--alt));
+}
+
+/* UI chrome (labels, outputs, buttons, subcard titles) shouldn't be draggable
+   as text — otherwise click-and-drag near a slider triggers macOS's grey-globe
+   drag ghost. Output panels (cards, ROI tiles, tables, server totals) stay
+   selectable so players can copy values. */
+.header,
+.part-label,
+.utility-strip,
+.early-dev-banner,
+.subcard-title,
+.controls,
+.controls-solo,
+.version-sliders,
+.virus-buttons {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Page identity — matches the contract in .claude/context/guides-design.md.
+   Tool chrome (live BTC reading + override inputs) lives in .utility-strip
+   below, never inside .header and never in the navbar. */
+.header { text-align: center; margin-bottom: 12px; }
+.header h1 {
+  font-family: var(--mono);
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.header .subtitle {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text-mute);
+  letter-spacing: 1px;
+}
+.part-label { text-align: center; margin-bottom: 24px; }
+.part-label span {
+  display: inline-block;
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 16px;
+  border-radius: 20px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* Utility strip — always-visible row holding the live BTC reading and the
+   planner override inputs. Subordinate to the header. BTC on the left,
+   override inputs on the right (.util-btc gets margin-right: auto). */
+.utility-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding: 10px 14px;
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.util-btc {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  font-family: var(--mono);
+  margin-right: auto;
+}
+.util-label {
+  color: var(--text-mute);
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.util-value { color: var(--warn); font-size: 13px; font-weight: 700; font-family: var(--mono); }
+.util-stale {
+  color: var(--danger);
+  font-size: 9px;
+  border: 1px solid var(--danger);
+  padding: 0 5px;
+  border-radius: 3px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* Early-dev warning banner                                             */
+/* ──────────────────────────────────────────────────────────────────── */
+.early-dev-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding: 10px 14px;
+  background: color-mix(in srgb, var(--warn) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--warn) 30%, var(--border));
+  border-radius: 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text);
+  letter-spacing: 0.3px;
+  line-height: 1.5;
+}
+.early-dev-tag {
+  flex-shrink: 0;
+  background: var(--warn);
+  color: var(--bg);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+}
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* Loadout panel                                                        */
+/* ──────────────────────────────────────────────────────────────────── */
+.loadout {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+/* Sub-cards group related configuration knobs (Server cluster on top,
+   Viruses below). They're visually subordinate to the loadout shell — same
+   palette, slightly inset, with a small uppercase title. */
+.subcard {
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin-bottom: 18px;
+}
+.subcard:last-of-type { margin-bottom: 0; }
+.subcard-title {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.subcard-virus .subcard-title { color: var(--alt); }
+
+/* The ROI row and tables sit outside the subcards, separated by a thin rule
+   so the eye reads "config → outcomes" top to bottom. */
+.loadout > .roi-row {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px dashed var(--border);
+}
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* Controls                                                             */
+/* ──────────────────────────────────────────────────────────────────── */
+/* The 3-column row holds (NET, RAM, CPU) in the server card and the per-virus
+   version sliders in the viruses card — same grid so each column aligns with
+   the virus card directly below it. */
+.controls {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+/* Solo-control row — exactly one control, placed in column 2 so it sits
+   centered above the middle column of `.controls` / `.version-sliders`
+   (Sub-PCs over RAM, Collector over Spam version). */
+.controls-solo {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.controls-solo > .control {
+  grid-column: 2;
+}
+
+/* Server totals row sits directly under the cluster controls — three small
+   number tiles. Each tile mirrors the ROI tile style (mono, dim label above,
+   bright value below) but in a tighter, denser grid. */
+.server-totals {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 10px 12px;
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--accent) 30%, var(--border));
+  border-radius: 6px;
+}
+.server-total {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.server-total-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-mute);
+}
+.server-total-value {
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--win);
+}
+.control {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.control-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-mute);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.control input[type="range"] {
+  -webkit-appearance: none;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  height: 8px;
+  width: 100%;
+}
+.control input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px; height: 16px;
+  background: var(--accent);
+  border-radius: 50%;
+  cursor: pointer;
+}
+.control output {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-bright);
+}
+.control select {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px;
+  border-radius: 6px;
+  font-family: var(--mono);
+}
+
+/* The per-virus version sliders sit in their own 3-column grid so each
+   slider centers directly over its matching virus card below. */
+.version-sliders {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+/* Virus-type selector lives below the cards, just above the ROI row.
+   Three buttons stretched to align with the three virus cards above. */
+.virus-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.virus-btn {
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.virus-btn-active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* Virus cards                                                          */
+/* ──────────────────────────────────────────────────────────────────── */
+.virus-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.virus-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  transition: border-color 120ms, box-shadow 120ms;
+}
+.vc-header {
+  display: flex; justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+.vc-name { font-weight: 700; }
+.vc-version { color: var(--text-mute); }
+.vc-dollar {
+  font-family: var(--mono);
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-bright);
+}
+.vc-daily {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+.vc-btc {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--warn);
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border);
+}
+.vc-npc-base {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-mute);
+  letter-spacing: 0.5px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border);
+}
+.vc-npc-base span {
+  color: var(--text-dim);
+  font-weight: 700;
+}
+
+.virus-card.vc-optimal {
+  border-color: var(--win);
+  box-shadow: 0 0 16px rgba(0,255,136,0.2);
+}
+.virus-card.vc-optimal .vc-name::after {
+  content: ' ★';
+  color: var(--win);
+}
+.virus-card.vc-selected:not(.vc-optimal) {
+  border-color: var(--accent);
+}
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* ROI tiles                                                            */
+/* ──────────────────────────────────────────────────────────────────── */
+.roi-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.roi-tile {
+  background: var(--bg);
+  border: 1px dashed var(--warn);
+  border-radius: 8px;
+  padding: 14px;
+}
+.roi-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--warn);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.roi-sublabel {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-mute);
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.roi-sublabel .js-roi-active-virus {
+  color: var(--accent);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.roi-headline {
+  font-family: var(--mono);
+  font-size: 15px;
+  color: var(--text-bright);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.roi-detail {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-dim);
+}
+.roi-payback {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 700;
+  margin-top: 6px;
+}
+.roi-total {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.08);
+  line-height: 1.55;
+}
+.roi-total-label {
+  color: var(--text-mute);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.roi-total .js-roi-cluster-range,
+.roi-total .js-roi-totalv-range {
+  color: var(--text-dim);
+  text-transform: none;
+  letter-spacing: 0;
+}
+.roi-total .js-roi-cluster-summary,
+.roi-total .js-roi-totalv-summary {
+  color: var(--text-bright);
+  font-weight: 600;
+}
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* Research table                                                       */
+/* ──────────────────────────────────────────────────────────────────── */
+.research-table-block summary {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  cursor: pointer;
+  padding: 8px 0;
+}
+.research-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+}
+.research-table th {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.research-table td {
+  padding: 8px 12px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text);
+  border-bottom: 1px solid rgba(26,39,68,0.5);
+}
+.research-table tr.over-round td {
+  background: color-mix(in srgb, var(--warn) 6%, transparent);
+}
+.research-table tr.research-next td {
+  background: color-mix(in srgb, var(--win) 6%, transparent);
+}
+.research-table tr.research-next.over-round td {
+  background: color-mix(in srgb, var(--warn) 10%, transparent);
+}
+.research-table-note {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.6;
+  margin: 8px 0 4px;
+  padding: 8px 12px;
+  background: color-mix(in srgb, var(--accent) 4%, transparent);
+  border-left: 2px solid var(--accent);
+  border-radius: 4px;
+}
+.research-table-note .js-research-effbase {
+  color: var(--win);
+  font-weight: 700;
+}
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* Sub-PC purchase ladder (inherits .research-table look & feel)        */
+/* ──────────────────────────────────────────────────────────────────── */
+.subpc-ladder-block {
+  margin-top: 16px;
+}
+.subpc-ladder-block summary {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  cursor: pointer;
+  padding: 8px 0;
+}
+.ladder-note {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.6;
+  margin: 8px 0 12px;
+  padding: 10px 12px;
+  background: color-mix(in srgb, var(--accent) 4%, transparent);
+  border-left: 2px solid var(--accent);
+  border-radius: 4px;
+}
+.ladder-note .js-ladder-per-pc {
+  color: var(--win);
+  font-weight: 700;
+}
+.ladder-note .js-ladder-virus {
+  color: var(--accent);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.subpc-ladder {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+}
+.subpc-ladder th {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.subpc-ladder td {
+  padding: 8px 12px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text);
+  border-bottom: 1px solid rgba(26,39,68,0.5);
+}
+/* Right-align numeric columns (all except #) for readable comparison */
+.subpc-ladder th:not(:first-child),
+.subpc-ladder td:not(:first-child) {
+  text-align: right;
+}
+.subpc-ladder tr.over-round td {
+  background: color-mix(in srgb, var(--warn) 6%, transparent);
+}
+.subpc-ladder tr.ladder-current td {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  color: var(--text-bright);
+  font-weight: 700;
+}
+.subpc-ladder tr.ladder-next td {
+  background: color-mix(in srgb, var(--win) 6%, transparent);
+}
+.subpc-ladder tr.ladder-next.over-round td {
+  background: color-mix(in srgb, var(--warn) 10%, transparent);
+}
+.ladder-tag {
+  display: inline-block;
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  padding: 0 4px;
+  margin-left: 4px;
+  border-radius: 3px;
+  vertical-align: middle;
+}
+.ladder-tag-next {
+  color: var(--win);
+  border-color: var(--win);
+}
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* Column key (collapsible "what do these columns mean?" inside tables) */
+/* ──────────────────────────────────────────────────────────────────── */
+.column-key {
+  margin: 4px 0 12px;
+}
+.column-key > summary {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-mute);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 4px 0;
+  list-style: none;
+}
+.column-key > summary::-webkit-details-marker { display: none; }
+.column-key > summary::before {
+  content: "▸ ";
+  color: var(--accent);
+  font-size: 9px;
+}
+.column-key[open] > summary::before { content: "▾ "; }
+.column-key > summary:hover {
+  color: var(--text-dim);
+}
+.column-key-list {
+  margin: 8px 0 0;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.015);
+  border-left: 2px dashed color-mix(in srgb, var(--accent) 35%, transparent);
+  border-radius: 4px;
+  display: grid;
+  grid-template-columns: minmax(120px, max-content) 1fr;
+  column-gap: 14px;
+  row-gap: 6px;
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.55;
+}
+.column-key-list dt {
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.column-key-list dd {
+  margin: 0;
+  color: var(--text-dim);
+}
+.column-key-list dd strong {
+  color: var(--text-bright);
+  font-weight: 600;
+}
+.column-key-list dd em {
+  color: var(--text);
+  font-style: normal;
+  text-decoration: underline dotted color-mix(in srgb, var(--accent) 40%, transparent);
+  text-underline-offset: 2px;
+}
+@media (max-width: 560px) {
+  .column-key-list {
+    grid-template-columns: 1fr;
+    row-gap: 2px;
+  }
+  .column-key-list dd {
+    margin: 0 0 6px;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* Footer                                                               */
+/* ──────────────────────────────────────────────────────────────────── */
+.footer {
+  text-align: center;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: #2a3f66;
+}
+.footer > div { margin-bottom: 8px; }
+.footer > div:last-of-type { margin-bottom: 0; }
+.footer .accent { color: var(--accent); }
+.footer .credit-name { color: var(--text-bright); }
+.footer .stamp { color: #2a3f66; }
+.footer a { color: var(--accent); text-decoration: none; }
+.footer .disclaimer {
+  margin-top: 14px;
+  color: var(--text-dim);
+  font-size: 11px;
+  font-family: var(--sans);
+  line-height: 1.5;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* Override inputs (inside .utility-strip)                               */
+/* ──────────────────────────────────────────────────────────────────── */
+.control-inline {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text-mute);
+  letter-spacing: 1px;
+}
+.control-inline input {
+  width: 90px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text-bright);
+  padding: 4px 6px;
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: 11px;
+}
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* Responsive                                                           */
+/* ──────────────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  body { padding: 16px; }
+  .container { padding: 20px; }
+  .virus-cards { grid-template-columns: 1fr; }
+  .version-sliders { grid-template-columns: 1fr; }
+  .controls { grid-template-columns: 1fr; }
+  .controls-solo { grid-template-columns: 1fr; }
+  .controls-solo > .control { grid-column: 1; }
+  .virus-buttons { grid-template-columns: 1fr; }
+  .roi-row { grid-template-columns: 1fr; }
+  .server-totals { grid-template-columns: 1fr; }
+  .subcard { padding: 12px 14px; }
+  .util-btc { margin-right: 0; }
+}
